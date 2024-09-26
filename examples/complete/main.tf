@@ -10,6 +10,7 @@ module "codebuild" {
   environment_variables       = var.environment_variables
   cache_expiration_days       = var.cache_expiration_days
   cache_type                  = var.cache_type
+  project_name = var.project_name
 
   context = module.this.context
 }
