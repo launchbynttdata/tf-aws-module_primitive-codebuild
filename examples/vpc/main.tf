@@ -31,15 +31,15 @@ module "codebuild" {
   cache_type                  = var.cache_type
   project_name = var.project_name
 
-#   vpc_config = {
-#     vpc_id = module.vpc.vpc_id
+  # vpc_config = {
+  #   vpc_id = module.vpc.vpc_id
 
-#     subnets = module.subnets.private_subnet_ids
+  #   subnets = module.subnets.private_subnet_ids
 
-#     security_group_ids = [
-#       module.vpc.vpc_default_security_group_id
-#     ]
-#   }
+  #   security_group_ids = [
+  #     module.vpc.vpc_default_security_group_id
+  #   ]
+  # }
 
-#   context = module.this.context
+  # context = module.this.context
 }

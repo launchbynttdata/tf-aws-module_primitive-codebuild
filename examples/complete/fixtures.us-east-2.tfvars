@@ -6,6 +6,8 @@ stage = "test"
 
 name = "codebuild-test"
 
+project_name = "launch_project"
+
 cache_bucket_suffix_enabled = true
 
 environment_variables = [
