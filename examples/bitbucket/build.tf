@@ -5,6 +5,7 @@ module "build" {
   namespace = var.namespace
   stage     = var.stage
   name      = local.build_name
+  project_name = var.project_name
 
   # https://docs.aws.amazon.com/codebuild/latest/userguide/build-env-ref-available.html
   build_image        = var.build_image

@@ -50,7 +50,7 @@ resource "aws_s3_bucket_lifecycle_configuration" "cache_bucket_lifecycle" {
 # IAM Role for CodeBuild
 resource "aws_iam_role" "default" {
   count                 = module.this.enabled ? 1 : 0
-  name                  = var.project_name
+  name                  = "${var.project_name}-role"
   assume_role_policy    = data.aws_iam_policy_document.role.json
   force_detach_policies = true
   path                  = var.iam_role_path
@@ -92,6 +92,8 @@ data "aws_iam_policy_document" "permissions" {
       "logs:CreateLogGroup",
       "logs:CreateLogStream",
       "logs:PutLogEvents",
+      "s3:GetObject",
+      "s3:ListObject",
     ], var.extra_permissions))
 
     effect    = "Allow"
@@ -115,7 +117,7 @@ data "aws_iam_policy_document" "permissions" {
 # IAM Policy Attachment for Default Role
 resource "aws_iam_policy" "default" {
   count  = module.this.enabled ? 1 : 0
-  name   = var.project_name
+  name   = "${var.project_name}-policy"
   path   = var.iam_policy_path
   policy = data.aws_iam_policy_document.combined_permissions.json
   tags   = var.tags
@@ -130,6 +132,13 @@ data "aws_s3_bucket" "secondary_artifact" {
 # Combined IAM Policy Document for Permissions
 data "aws_iam_policy_document" "combined_permissions" {
   override_policy_documents = compact([data.aws_iam_policy_document.permissions.json])
+}
+
+# Attaching policy to role
+resource "aws_iam_policy_attachment" "codebuild_policy_attachment" {
+  name       = "${var.project_name}-policy_attachment"
+  roles      = [aws_iam_role.default[0].name]
+  policy_arn = aws_iam_policy.default[0].arn
 }
 
 # CodeBuild Project Definition
@@ -202,3 +211,4 @@ resource "random_string" "bucket_prefix" {
   special = false
   lower   = true
 }
+

@@ -159,7 +159,7 @@ variable "buildspec" {
 variable "source_type" {
   description = "The source type for CodeBuild (e.g., S3, GITHUB, CODECOMMIT)"
   type        = string
-  default     = "GITHUB"
+  default     = "S3"
 }
 
 # Location of the source code for the build
@@ -237,11 +237,11 @@ variable "iam_policy_path" {
   description = "Path to the policy."
 }
 
-variable "tags" {
-  description = "Common tags to apply to all resources"
-  type = map(string)
-  default = {
-    "Environment" = "dev"
-    "Project" = "var.project_name"
-  }
-}
+# variable "tags" {
+#   description = "Common tags to apply to all resources"
+#   type = map(string)
+#   default = {
+#     "Environment" = "dev"
+#     "Project" = "var.project_name"
+#   }
+# }

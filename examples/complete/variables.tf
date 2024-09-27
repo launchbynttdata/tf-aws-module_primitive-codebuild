@@ -36,7 +36,17 @@ variable "cache_type" {
   description = "The type of storage that will be used for the AWS CodeBuild project cache. Valid values: NO_CACHE, LOCAL, and S3.  Defaults to NO_CACHE.  If cache_type is S3, it will create an S3 bucket for storing codebuild cache inside"
 }
 variable "project_name" {
-  type = string
+  type    = string
   default = "build"
-  
+}
+
+variable "source_location" {
+  description = "Location of the source code (e.g., GitHub URL or S3 path)"
+  type        = string
+  default     = ""
+}
+variable "source_type" {
+  description = "The source type for CodeBuild (e.g., S3, GITHUB, CODECOMMIT)"
+  type        = string
+  default     = "S3"
 }

@@ -298,3 +298,8 @@ variable "log_tracker" {
   type    = map(any)
   default = {}
 }
+
+variable "project_name" {
+  description = "Name of the project for identification"
+  type        = string 
+}

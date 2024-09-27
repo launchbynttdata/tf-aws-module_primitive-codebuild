@@ -6,7 +6,9 @@ stage = "test"
 
 name = "codebuild-test"
 
-project_name = "launch_project"
+source_location = "s3://osahon-test-020127659860/trigger_pipeline.zip"
+
+
 
 cache_bucket_suffix_enabled = true
 
