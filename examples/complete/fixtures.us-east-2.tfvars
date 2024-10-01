@@ -6,7 +6,9 @@ stage = "test"
 
 name = "codebuild-test"
 
-source_location = "s3://osahon-test-020127659860/trigger_pipeline.zip"
+source_location = "osahon-test-020127659860/trigger_pipeline.zip"
+
+buildspec = "osahon-test-020127659860/buildspec.yml"
 
 
 

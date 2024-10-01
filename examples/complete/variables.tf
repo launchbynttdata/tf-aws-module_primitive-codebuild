@@ -50,3 +50,9 @@ variable "source_type" {
   type        = string
   default     = "S3"
 }
+
+variable "buildspec" {
+  description = "Path to the buildspec.yml file"
+  type        = string
+  default     = "buildspec.yml"
+}

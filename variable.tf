@@ -83,7 +83,7 @@ variable "secondary_artifact_location" {
 
 # Type of build artifact (e.g., S3 or NO_ARTIFACT)
 variable "artifact_type" {
-  description = "Type of build artifact (e.g., S3, NO_ARTIFACT)"
+  description = "Type of build artifact (e.g., S3, NO_ARTIFACTS)"
   type        = string
   default     = "S3"
 }
@@ -159,7 +159,7 @@ variable "buildspec" {
 variable "source_type" {
   description = "The source type for CodeBuild (e.g., S3, GITHUB, CODECOMMIT)"
   type        = string
-  default     = "S3"
+  default     = "GITHUB"
 }
 
 # Location of the source code for the build
@@ -237,11 +237,69 @@ variable "iam_policy_path" {
   description = "Path to the policy."
 }
 
-# variable "tags" {
-#   description = "Common tags to apply to all resources"
-#   type = map(string)
-#   default = {
-#     "Environment" = "dev"
-#     "Project" = "var.project_name"
-#   }
-# }
+variable "secondary_sources" {
+  type = list(object(
+    {
+      git_clone_depth     = number
+      location            = string
+      source_identifier   = string
+      type                = string
+      fetch_submodules    = bool
+      insecure_ssl        = bool
+      report_build_status = bool
+  }))
+  default     = []
+  description = "(Optional) secondary source for the codebuild project in addition to the primary location"
+}
+
+# https://registry.terraform.io/providers/hashicorp/aws/latest/docs/resources/codebuild_project#vpc_config
+variable "vpc_config" {
+  type        = any
+  default     = {}
+  description = "Configuration for the builds to run inside a VPC."
+}
+
+variable "file_system_locations" {
+  type        = any
+  default     = {}
+  description = "A set of file system locations to to mount inside the build. File system locations are documented below."
+}
+
+variable "logs_config" {
+  type        = any
+  default     = {}
+  description = "Configuration for the builds to store log data to CloudWatch or S3."
+}
+
+variable "enable_github_authentication" {
+  description = <<EOF
+    Whether to enable Github authentication using Personal Access token.
+    If true, it uses the github_token  and github_token_type must be of type SECRETS_MANAGER to authenticate
+  EOF
+  type        = bool
+  default     = false
+}
+
+variable "github_token" {
+  type        = string
+  default     = ""
+  description = "(Optional) GitHub auth token environment variable (`GITHUB_TOKEN`)"
+}
+
+variable "create_webhooks" {
+  description = "Whether to create webhooks for Github, GitHub Enterprise or Bitbucket"
+  type        = bool
+  default     = false
+}
+
+variable "webhook_build_type" {
+  description = "Webhook build type. Choose between BUILD or BUILD_BATCH"
+  type        = string
+  default     = "BUILD"
+}
+
+variable "webhook_filters" {
+  description = "Filters supported by webhook. EVENT, BASE_REF, HEAD_REF, ACTOR_ACCOUNT_ID, FILE_PATH, COMMIT_MESSAGE"
+  type        = map(string)
+  default     = {}
+}

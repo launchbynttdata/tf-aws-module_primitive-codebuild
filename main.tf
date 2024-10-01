@@ -202,6 +202,105 @@ resource "aws_codebuild_project" "default" {
       }
     }
   }
+  dynamic "secondary_sources" {
+    for_each = var.secondary_sources
+    content {
+      git_clone_depth     = secondary_source.value.git_clone_depth
+      location            = secondary_source.value.location
+      source_identifier   = secondary_source.value.source_identifier
+      type                = secondary_source.value.type
+      insecure_ssl        = secondary_source.value.insecure_ssl
+      report_build_status = secondary_source.value.report_build_status
+
+      git_submodules_config {
+        fetch_submodules = secondary_source.value.fetch_submodules
+      }
+    }
+  }
+
+  dynamic "vpc_config" {
+    for_each = length(var.vpc_config) > 0 ? [""] : []
+    content {
+      vpc_id             = lookup(var.vpc_config, "vpc_id", null)
+      subnets            = lookup(var.vpc_config, "subnets", null)
+      security_group_ids = lookup(var.vpc_config, "security_group_ids", null)
+    }
+  }
+
+  dynamic "logs_config" {
+    for_each = length(var.logs_config) > 0 ? [""] : []
+    content {
+      dynamic "cloudwatch_logs" {
+        for_each = contains(keys(var.logs_config), "cloudwatch_logs") ? { key = var.logs_config["cloudwatch_logs"] } : {}
+        content {
+          status      = lookup(cloudwatch_logs.value, "status", null)
+          group_name  = lookup(cloudwatch_logs.value, "group_name", null)
+          stream_name = lookup(cloudwatch_logs.value, "stream_name", null)
+        }
+      }
+
+      dynamic "s3_logs" {
+        for_each = contains(keys(var.logs_config), "s3_logs") ? { key = var.logs_config["s3_logs"] } : {}
+        content {
+          status              = lookup(s3_logs.value, "status", null)
+          location            = lookup(s3_logs.value, "location", null)
+          encryption_disabled = lookup(s3_logs.value, "encryption_disabled", null)
+        }
+      }
+    }
+  }
+
+  dynamic "file_system_locations" {
+    for_each = length(var.file_system_locations) > 0 ? [""] : []
+    content {
+      identifier    = lookup(file_system_locations.value, "identifier", null)
+      location      = lookup(file_system_locations.value, "location", null)
+      mount_options = lookup(file_system_locations.value, "mount_options", null)
+      mount_point   = lookup(file_system_locations.value, "mount_point", null)
+      type          = lookup(file_system_locations.value, "type", null)
+    }
+  }
+}
+
+# Pull the github_token from the Secrets Manager
+data "aws_secretsmanager_secret" "secret" {
+  count = var.enable_github_authentication ? 1 : 0
+
+  arn = var.github_token
+}
+
+data "aws_secretsmanager_secret_version" "current_secret" {
+  count = var.enable_github_authentication ? 1 : 0
+
+  secret_id = data.aws_secretsmanager_secret.secret[0].id
+}
+
+# Aunthenticate with Github
+resource "aws_codebuild_source_credential" "github_authentication" {
+  count       = var.enable_github_authentication ? 1 : 0
+  auth_type   = "PERSONAL_ACCESS_TOKEN"
+  server_type = "GITHUB"
+  token       = data.aws_secretsmanager_secret_version.current_secret[0].secret_string
+}
+
+# Set up webhook for Github, Bitbucket
+resource "aws_codebuild_webhook" "webhook" {
+  count = var.create_webhooks ? 1 : 0
+
+  project_name = aws_codebuild_project.default[0].name
+  build_type   = var.webhook_build_type
+  dynamic "filter_group" {
+    for_each = length(var.webhook_filters) > 0 ? [1] : []
+    content {
+      dynamic "filter" {
+        for_each = var.webhook_filters
+        content {
+          type    = filter.key
+          pattern = filter.value
+        }
+      }
+    }
+  }
 }
 
 resource "random_string" "bucket_prefix" {
@@ -211,4 +310,3 @@ resource "random_string" "bucket_prefix" {
   special = false
   lower   = true
 }
-
