@@ -1,240 +1,133 @@
-# AWS region where resources will be deployed
-variable "aws_region" {
-  description = "The AWS region to deploy the resources."
-  type        = string
-  default     = "us-west-2"
+variable "environment_variables" {
+  type = list(object(
+    {
+      name  = string
+      value = string
+      type  = string
+    }
+  ))
+
+  default = [
+    {
+      name  = "NO_ADDITIONAL_BUILD_VARS"
+      value = "TRUE"
+      type  = "PLAINTEXT"
+    }
+  ]
+
+  description = "A list of maps, that contain the keys 'name', 'value', and 'type' to be used as additional environment variables for the build. Valid types are 'PLAINTEXT', 'PARAMETER_STORE', or 'SECRETS_MANAGER'"
 }
 
-# The name of the project for identifying resources
-variable "project_name" {
-  description = "Name of the project for identification"
-  type        = string
-}
-
-# Description of the CodeBuild project
 variable "description" {
-  description = "Description of the CodeBuild project"
   type        = string
-  default     = "CodeBuild project for building and testing"
+  default     = "Managed by Terraform"
+  description = "Short description of the CodeBuild project"
 }
 
-# Enable versioning for the S3 bucket
-variable "versioning_enabled" {
-  description = "Whether to enable versioning on the S3 bucket"
-  type        = bool
-  default     = true
-}
-
-# Access log bucket for the S3 bucket (empty to disable logging)
-variable "access_log_bucket_name" {
-  description = "The name of the S3 bucket for access logs. Leave empty to disable logging."
-  type        = string
-  default     = ""
-}
-
-# Number of days before cached objects in the S3 bucket expire
-variable "cache_expiration_days" {
-  description = "Number of days before cached objects expire"
+variable "concurrent_build_limit" {
   type        = number
-  default     = 30
+  default     = null
+  description = "Specify a maximum number of concurrent builds for the project. The value specified must be greater than 0 and less than the account concurrent running builds limit."
 }
 
-# Enable server-side encryption for the S3 bucket
-variable "encryption_enabled" {
-  description = "Whether to enable encryption for the S3 bucket"
+variable "cache_expiration_days" {
+  default     = 7
+  description = "How many days should the build cache be kept. It only works when cache_type is 'S3'"
+}
+
+variable "cache_bucket_suffix_enabled" {
   type        = bool
   default     = true
+  description = "The cache bucket generates a random 13 character string to generate a unique bucket name. If set to false it uses terraform-null-label's id value. It only works when cache_type is 'S3"
 }
 
-# IAM role path for the CodeBuild role
-variable "iam_role_path" {
-  description = "IAM role path for the CodeBuild role"
+variable "cache_type" {
   type        = string
-  default     = "/service-role/"
+  default     = "NO_CACHE"
+  description = "The type of storage that will be used for the AWS CodeBuild project cache. Valid values: NO_CACHE, LOCAL, and S3.  Defaults to NO_CACHE.  If cache_type is S3, it will create an S3 bucket for storing codebuild cache inside"
 }
 
-# Optional permissions boundary for the IAM role
-variable "iam_permissions_boundary" {
-  description = "Optional permissions boundary for the IAM role"
-  type        = string
-  default     = null
-}
-
-# Inline IAM policy document for CodeBuild
-variable "codebuild_iam" {
-  description = "IAM policy document for inline policies in the CodeBuild role"
-  type        = string
-  default     = null
-}
-
-# Additional permissions for the IAM role
-variable "extra_permissions" {
-  description = "Additional permissions to grant to the IAM role"
+variable "local_cache_modes" {
   type        = list(string)
   default     = []
+  description = "Specifies settings that AWS CodeBuild uses to store and reuse build dependencies. Valid values: LOCAL_SOURCE_CACHE, LOCAL_DOCKER_LAYER_CACHE, and LOCAL_CUSTOM_CACHE"
 }
 
-# Secondary artifact location in S3 for CodeBuild
-variable "secondary_artifact_location" {
-  description = "S3 bucket location for secondary artifacts"
-  type        = string
-  default     = null
-}
-
-# Type of build artifact (e.g., S3 or NO_ARTIFACT)
-variable "artifact_type" {
-  description = "Type of build artifact (e.g., S3, NO_ARTIFACTS)"
-  type        = string
-  default     = "S3"
-}
-
-# Location to store build artifacts (e.g., S3 bucket)
-variable "artifact_location" {
-  description = "S3 bucket or location to store build artifacts"
-  type        = string
-  default     = null
-}
-
-# Enable build badge for the CodeBuild project
 variable "badge_enabled" {
-  description = "Whether to enable a build badge for the CodeBuild project"
   type        = bool
   default     = false
+  description = "Generates a publicly-accessible URL for the projects build badge. Available as badge_url attribute when enabled"
 }
 
-# Timeout for the build in minutes
-variable "build_timeout" {
-  description = "Build timeout in minutes"
-  type        = number
-  default     = 60
+variable "build_image" {
+  type        = string
+  default     = "aws/codebuild/standard:2.0"
+  description = "Docker image for build environment, e.g. 'aws/codebuild/standard:2.0' or 'aws/codebuild/eb-nodejs-6.10.0-amazonlinux-64:4.0.0'. For more info: http://docs.aws.amazon.com/codebuild/latest/userguide/build-env-ref.html"
 }
 
-# Compute type for the CodeBuild project
 variable "build_compute_type" {
-  description = "Compute type for CodeBuild (e.g., BUILD_GENERAL1_SMALL)"
   type        = string
   default     = "BUILD_GENERAL1_SMALL"
+  description = "Instance type of the build instance"
 }
 
-# Docker image for the build environment
-variable "build_image" {
-  description = "Docker image for the build environment"
-  type        = string
-  default     = "aws/codebuild/standard:5.0"
+variable "build_timeout" {
+  default     = 60
+  description = "How long in minutes, from 5 to 480 (8 hours), for AWS CodeBuild to wait until timing out any related build that does not get marked as completed"
 }
 
-# Enable privileged mode for the build
-variable "privileged_mode" {
-  description = "Enable privileged mode for the build"
-  type        = bool
-  default     = false
-}
-
-# Type of build environment (e.g., LINUX_CONTAINER)
 variable "build_type" {
-  description = "The environment type for the build (e.g., LINUX_CONTAINER)"
   type        = string
   default     = "LINUX_CONTAINER"
+  description = "The type of build environment, e.g. 'LINUX_CONTAINER' or 'WINDOWS_CONTAINER'"
 }
 
-# Additional environment variables for the build
-variable "environment_variables" {
-  description = "Additional environment variables for the CodeBuild environment"
-  type = list(object({
-    name  = string
-    value = string
-    type  = string
-  }))
-  default = []
-}
-
-# Path to the buildspec.yml file
 variable "buildspec" {
-  description = "Path to the buildspec.yml file"
-  type        = string
-  default     = "buildspec.yml"
-}
-
-# The source type for CodeBuild (e.g., S3, GITHUB, CODECOMMIT)
-variable "source_type" {
-  description = "The source type for CodeBuild (e.g., S3, GITHUB, CODECOMMIT)"
-  type        = string
-  default     = "GITHUB"
-}
-
-# Location of the source code for the build
-variable "source_location" {
-  description = "Location of the source code (e.g., GitHub URL or S3 path)"
   type        = string
   default     = ""
+  description = "Optional buildspec declaration to use for building the project"
 }
 
-# Report build status back to the source provider (e.g., GitHub)
-variable "report_build_status" {
-  description = "Whether to report the build status back to the source provider"
-  type        = bool
-  default     = true
-}
-
-# Depth of Git clone for shallow clones
-variable "git_clone_depth" {
-  description = "Git clone depth (null for no limit)"
-  type        = number
-  default     = null
-}
-
-# Whether to fetch Git submodules
-variable "fetch_git_submodules" {
-  description = "Whether to fetch Git submodules"
+variable "privileged_mode" {
   type        = bool
   default     = false
+  description = "(Optional) If set to true, enables running the Docker daemon inside a Docker container on the CodeBuild instance. Used when building Docker images"
 }
 
-# Number of concurrent builds for the CodeBuild project
-variable "concurrent_build_limit" {
-  description = "Number of concurrent builds for CodeBuild"
-  type        = number
-  default     = 1
-}
-
-# Cache modes for local caching in CodeBuild
-variable "local_cache_modes" {
-  description = "Cache modes for local caching in CodeBuild (e.g., LOCAL_SOURCE_CACHE)"
-  type        = list(string)
-  default     = []
-}
-
-# The S3 bucket name for cache (null to auto-generate a name)
-variable "s3_cache_bucket_name" {
-  description = "The S3 cache bucket name, set to null for automatic naming"
+variable "github_token" {
   type        = string
-  default     = null
+  default     = ""
+  description = "(Optional) GitHub auth token environment variable (`GITHUB_TOKEN`)"
 }
 
-# Cache type for the CodeBuild project (e.g., S3, LOCAL, or NO_CACHE)
-variable "cache_type" {
-  description = "The cache type for CodeBuild (e.g., S3, LOCAL, NO_CACHE)"
+variable "github_token_type" {
   type        = string
-  default     = "S3"
+  default     = "PARAMETER_STORE"
+  description = "Storage type of GITHUB_TOKEN environment variable (`PARAMETER_STORE`, `PLAINTEXT`, `SECRETS_MANAGER`)"
 }
 
-# Whether to enable a suffix for the S3 cache bucket name
-variable "cache_bucket_suffix_enabled" {
-  description = "Whether to enable a suffix for the S3 cache bucket name"
-  type        = bool
-  default     = true
-}
-
-variable "lifecycle_rule_enabled" {
-  description = "Whether to enable the lifecycle rule."
-  type        = bool
-  default     = true
-}
-
-variable "iam_policy_path" {
+variable "aws_region" {
   type        = string
-  default     = "/service-role/"
-  description = "Path to the policy."
+  default     = ""
+  description = "(Optional) AWS Region, e.g. us-east-1. Used as CodeBuild ENV variable when building Docker images. For more info: http://docs.aws.amazon.com/codebuild/latest/userguide/sample-docker.html"
+}
+
+variable "aws_account_id" {
+  type        = string
+  default     = ""
+  description = "(Optional) AWS Account ID. Used as CodeBuild ENV variable when building Docker images. For more info: http://docs.aws.amazon.com/codebuild/latest/userguide/sample-docker.html"
+}
+
+variable "image_repo_name" {
+  type        = string
+  default     = "UNSET"
+  description = "(Optional) ECR repository name to store the Docker image built by this module. Used as CodeBuild ENV variable when building Docker images. For more info: http://docs.aws.amazon.com/codebuild/latest/userguide/sample-docker.html"
+}
+
+variable "image_tag" {
+  type        = string
+  default     = "latest"
+  description = "(Optional) Docker image tag in the ECR repository, e.g. 'latest'. Used as CodeBuild ENV variable when building Docker images. For more info: http://docs.aws.amazon.com/codebuild/latest/userguide/sample-docker.html"
 }
 
 variable "secondary_sources" {
@@ -252,11 +145,155 @@ variable "secondary_sources" {
   description = "(Optional) secondary source for the codebuild project in addition to the primary location"
 }
 
+variable "source_type" {
+  type        = string
+  default     = "CODEPIPELINE"
+  description = "The type of repository that contains the source code to be built. Valid values for this parameter are: CODECOMMIT, CODEPIPELINE, GITHUB, GITHUB_ENTERPRISE, BITBUCKET or S3"
+}
+
+variable "source_location" {
+  type        = string
+  default     = ""
+  description = "The location of the source code from git or s3"
+}
+
+variable "artifact_type" {
+  type        = string
+  default     = "CODEPIPELINE"
+  description = "The build output artifact's type. Valid values for this parameter are: CODEPIPELINE, NO_ARTIFACTS or S3"
+}
+
+variable "artifact_location" {
+  type        = string
+  default     = ""
+  description = "Location of artifact. Applies only for artifact of type S3"
+}
+
+variable "secondary_artifact_location" {
+  type        = string
+  default     = null
+  description = "Location of secondary artifact. Must be an S3 reference"
+}
+
+variable "secondary_artifact_identifier" {
+  type        = string
+  default     = null
+  description = "Secondary artifact identifier. Must match the identifier in the build spec"
+}
+
+variable "secondary_artifact_encryption_enabled" {
+  type        = bool
+  default     = false
+  description = "Set to true to enable encryption on the secondary artifact bucket"
+}
+
+variable "report_build_status" {
+  type        = bool
+  default     = false
+  description = "Set to true to report the status of a build's start and finish to your source provider. This option is only valid when the source_type is BITBUCKET or GITHUB"
+}
+
+variable "git_clone_depth" {
+  type        = number
+  default     = null
+  description = "Truncate git history to this many commits."
+}
+
+variable "private_repository" {
+  type        = bool
+  default     = false
+  description = "Set to true to login into private repository with credentials supplied in source_credential variable."
+}
+
+variable "source_credential_auth_type" {
+  type        = string
+  default     = "PERSONAL_ACCESS_TOKEN"
+  description = "The type of authentication used to connect to a GitHub, GitHub Enterprise, or Bitbucket repository."
+}
+
+variable "source_credential_server_type" {
+  type        = string
+  default     = "GITHUB"
+  description = "The source provider used for this project."
+}
+
+variable "source_credential_token" {
+  type        = string
+  default     = ""
+  description = "For GitHub or GitHub Enterprise, this is the personal access token. For Bitbucket, this is the app password."
+}
+
+variable "source_credential_user_name" {
+  type        = string
+  default     = ""
+  description = "The Bitbucket username when the authType is BASIC_AUTH. This parameter is not valid for other types of source providers or connections."
+}
+
+variable "source_version" {
+  type        = string
+  default     = ""
+  description = "A version of the build input to be built for this project. If not specified, the latest version is used."
+}
+
+variable "fetch_git_submodules" {
+  type        = bool
+  default     = false
+  description = "If set to true, fetches Git submodules for the AWS CodeBuild build project."
+}
+
 # https://registry.terraform.io/providers/hashicorp/aws/latest/docs/resources/codebuild_project#vpc_config
 variable "vpc_config" {
   type        = any
   default     = {}
   description = "Configuration for the builds to run inside a VPC."
+}
+
+variable "logs_config" {
+  type        = any
+  default     = {}
+  description = "Configuration for the builds to store log data to CloudWatch or S3."
+}
+
+variable "extra_permissions" {
+  type        = list(any)
+  default     = []
+  description = "List of action strings which will be added to IAM service account permissions."
+}
+
+variable "iam_role_path" {
+  type        = string
+  default     = null
+  description = "Path to the role."
+}
+
+variable "iam_policy_path" {
+  type        = string
+  default     = "/service-role/"
+  description = "Path to the policy."
+}
+
+variable "iam_permissions_boundary" {
+  type        = string
+  default     = null
+  description = "ARN of the policy that is used to set the permissions boundary for the role."
+}
+
+variable "encryption_enabled" {
+  type        = bool
+  default     = false
+  description = "When set to 'true' the resource will have AES256 encryption enabled by default"
+}
+
+variable "versioning_enabled" {
+  type        = bool
+  default     = true
+  description = "A state of versioning. Versioning is a means of keeping multiple variants of an object in the same bucket"
+}
+
+variable "access_log_bucket_name" {
+  type        = string
+  default     = ""
+  description = "Name of the S3 bucket where s3 access log will be sent to"
 }
 
 variable "file_system_locations" {
@@ -265,10 +302,33 @@ variable "file_system_locations" {
   description = "A set of file system locations to to mount inside the build. File system locations are documented below."
 }
 
-variable "logs_config" {
-  type        = any
-  default     = {}
-  description = "Configuration for the builds to store log data to CloudWatch or S3."
+variable "encryption_key" {
+  type        = string
+  default     = null
+  description = "AWS Key Management Service (AWS KMS) customer master key (CMK) to be used for encrypting the build project's build output artifacts."
+}
+
+variable "build_image_pull_credentials_type" {
+  type        = string
+  default     = "CODEBUILD"
+  description = "Type of credentials AWS CodeBuild uses to pull images in your build.Valid values: CODEBUILD, SERVICE_ROLE. When you use a cross-account or private registry image, you must use SERVICE_ROLE credentials."
+}
+
+variable "s3_cache_bucket_name" {
+  type        = string
+  default     = null
+  description = "Use an existing s3 bucket name for cache. Relevant if `cache_type` is set to `S3`."
+}
+
+variable "codebuild_iam" {
+  description = "Additional IAM policies to add to CodePipeline IAM role."
+  type        = string
+  default     = null
+}
+
+variable "project_name" {
+  type        = string
+  description = "Name of the codebuild project."
 }
 
 variable "enable_github_authentication" {
@@ -278,12 +338,6 @@ variable "enable_github_authentication" {
   EOF
   type        = bool
   default     = false
-}
-
-variable "github_token" {
-  type        = string
-  default     = ""
-  description = "(Optional) GitHub auth token environment variable (`GITHUB_TOKEN`)"
 }
 
 variable "create_webhooks" {
@@ -302,4 +356,10 @@ variable "webhook_filters" {
   description = "Filters supported by webhook. EVENT, BASE_REF, HEAD_REF, ACTOR_ACCOUNT_ID, FILE_PATH, COMMIT_MESSAGE"
   type        = map(string)
   default     = {}
+}
+
+variable "lifecycle_rule_enabled" {
+  description = "Whether to enable a suffix for the S3 cache bucket name"
+  type = bool
+  default = true  
 }

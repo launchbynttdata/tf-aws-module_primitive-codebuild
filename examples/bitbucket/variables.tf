@@ -74,6 +74,7 @@ variable "environment_variables" {
     {
       name  = string
       value = string
+      type  = string
   }))
 
   default = [
@@ -301,5 +302,5 @@ variable "log_tracker" {
 
 variable "project_name" {
   description = "Name of the project for identification"
-  type        = string 
+  type        = string
 }

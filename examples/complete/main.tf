@@ -1,8 +1,3 @@
-provider "aws" {
-  region  = var.region
-  profile = "launch-sandbox-admin"
-}
-
 module "codebuild" {
   source                      = "../../"
   description                 = "This is my awesome CodeBuild project"
@@ -21,33 +16,4 @@ module "codebuild" {
 
 }
 
-# data "aws_s3_bucket" "test" {
-#   bucket = "osahon-test-020127659860"
 
-# }
-
-# output "bucket" {
-#   value = data.aws_s3_bucket.test.bucket
-# }
-
-# resource "aws_s3_bucket_policy" "test" {
-#   bucket = data.aws_s3_bucket.test.bucket
-#   policy = jsonencode(
-#     {
-#       "Version" : "2012-10-17",
-#       "Statement" : [
-#         {
-#           "Effect" : "Allow",
-#           "Principal" : {
-#             "Service" : "codebuild.amazonaws.com"
-#           },
-#           "Action" : "s3:*",
-#           "Resource" : [
-#             "${data.aws_s3_bucket.test.arn}/*",
-#             data.aws_s3_bucket.test.arn
-#           ]
-#         }
-#       ]
-#     }
-#   )
-# }

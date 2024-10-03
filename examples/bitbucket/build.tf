@@ -15,8 +15,8 @@ module "build" {
   privileged_mode    = var.privileged_mode
 
   # Target repository (ECS)
-  image_repo_name = aws_ecr_repository.ecr_repo.name
-  image_tag       = local.image_tag
+  #image_repo_name = var.image_repo_name
+  #image_tag       = var.image_tag
 
   # Extra permissions
   extra_permissions = var.extra_permissions
