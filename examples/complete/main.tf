@@ -1,4 +1,5 @@
 module "codebuild" {
+  aws_region = var.region
   source                      = "../../"
   description                 = "This is my awesome CodeBuild project"
   concurrent_build_limit      = 1
