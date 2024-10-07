@@ -24,7 +24,7 @@ module "this" {
   source  = "cloudposse/label/null"
   version = "0.25.0" # requires Terraform >= 0.13.0
 
-  enabled             = var.enabled
+  enabled             = var.enabled_count
   namespace           = var.namespace
   tenant              = var.tenant
   environment         = var.environment
@@ -94,7 +94,7 @@ variable "context" {
   }
 }
 
-variable "enabled" {
+variable "enabled_count" {
   type        = bool
   default     = null
   description = "Set to false to prevent the module from creating any resources"

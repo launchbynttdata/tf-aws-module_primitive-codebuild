@@ -52,7 +52,7 @@ variable "local_cache_modes" {
   description = "The type of storage that will be used for the AWS CodeBuild project cache. Valid values: NO_CACHE, LOCAL, and S3.  Defaults to NO_CACHE.  If cache_type is S3, it will create an S3 bucket for storing codebuild cache inside"
 }
 
-variable "enabled" {
+variable "cache_enabled" {
   type        = bool
   description = "Flag to enable or disable the module"
   default     = true
@@ -246,7 +246,7 @@ variable "source_type" {
 
 # https://registry.terraform.io/providers/hashicorp/aws/latest/docs/resources/codebuild_project#vpc_config
 variable "vpc_config" {
-  type        = any
+  type        = map(any)
   default     = {}
   description = "Configuration for the builds to run inside a VPC."
 }
@@ -285,6 +285,12 @@ variable "encryption_enabled" {
   type        = bool
   default     = false
   description = "When set to 'true' the resource will have AES256 encryption enabled by default"
+}
+
+variable "versioning_enabled" {
+  type        = bool
+  default     = true
+  description = "Whether to enable versioning for the S3 bucket"
 }
 
 variable "access_log_bucket_name" {
@@ -329,35 +335,35 @@ variable "project_name" {
 }
 
 variable "enable_github_authentication" {
+  type        = bool
   description = <<EOF
     Whether to enable Github authentication using Personal Access token.
     If true, it uses the github_token  and github_token_type must be of type SECRETS_MANAGER to authenticate
   EOF
-  type        = bool
   default     = false
 }
 
 variable "create_webhooks" {
-  description = "Whether to create webhooks for Github, GitHub Enterprise or Bitbucket"
   type        = bool
+  description = "Whether to create webhooks for Github, GitHub Enterprise or Bitbucket"
   default     = false
 }
 
 variable "webhook_build_type" {
-  description = "Webhook build type. Choose between BUILD or BUILD_BATCH"
   type        = string
+  description = "Webhook build type. Choose between BUILD or BUILD_BATCH"
   default     = "BUILD"
 }
 
 variable "webhook_filters" {
-  description = "Filters supported by webhook. EVENT, BASE_REF, HEAD_REF, ACTOR_ACCOUNT_ID, FILE_PATH, COMMIT_MESSAGE"
   type        = map(string)
+  description = "Filters supported by webhook. EVENT, BASE_REF, HEAD_REF, ACTOR_ACCOUNT_ID, FILE_PATH, COMMIT_MESSAGE"
   default     = {}
 }
 
 variable "lifecycle_rule_enabled" {
-  description = "Whether to enable a suffix for the S3 cache bucket name"
   type        = bool
+  description = "Whether to enable a suffix for the S3 cache bucket name"
   default     = true
 }
 

@@ -1,6 +1,6 @@
 # IAM Role for CodeBuild
 resource "aws_iam_role" "default" {
-  count                 = var.enabled ? 1 : 0
+  count                 = var.cache_enabled ? 1 : 0
   name                  = "${var.project_name}-default-role"
   assume_role_policy    = data.aws_iam_policy_document.role.json
   force_detach_policies = true
@@ -28,7 +28,7 @@ data "aws_iam_policy_document" "combined_permissions" {
 
 # CodeBuild Policy
 resource "aws_iam_policy" "default" {
-  count  = var.enabled ? 1 : 0
+  count  = var.cache_enabled ? 1 : 0
   name   = "${var.project_name}-default-policy"
   path   = var.iam_policy_path
   policy = data.aws_iam_policy_document.combined_permissions.json
@@ -37,7 +37,7 @@ resource "aws_iam_policy" "default" {
 
 # Permissions for S3 Cache Bucket
 data "aws_iam_policy_document" "permissions_cache_bucket" {
-  count = var.enabled && local.s3_cache_enabled ? 1 : 0
+  count = var.cache_enabled && local.s3_cache_enabled ? 1 : 0
   statement {
     sid = ""
 
@@ -56,14 +56,14 @@ data "aws_iam_policy_document" "permissions_cache_bucket" {
 
 # Attach the CodeBuild role to default policy
 resource "aws_iam_role_policy_attachment" "default" {
-  count      = var.enabled ? 1 : 0
+  count      = var.cache_enabled ? 1 : 0
   policy_arn = join("", aws_iam_policy.default.*.arn)
   role       = join("", aws_iam_role.default.*.id)
 }
 
 # Attach the Cache Bucket Policy to CodeBuild role
 resource "aws_iam_role_policy_attachment" "default_cache_bucket" {
-  count      = var.enabled && local.s3_cache_enabled ? 1 : 0
+  count      = var.cache_enabled && local.s3_cache_enabled ? 1 : 0
   policy_arn = join("", aws_iam_policy.default_cache_bucket.*.arn)
   role       = join("", aws_iam_role.default.*.id)
 }
@@ -85,7 +85,7 @@ data "aws_iam_policy_document" "role" {
 
 # ECR Access and VPC Permissions Policy Document
 data "aws_iam_policy_document" "ecr_vpc_permissions" {
-  count = var.enabled && var.vpc_config != {} ? 1 : 0
+  count = var.cache_enabled && var.vpc_config != {} ? 1 : 0 
 
   # VPC Permissions
   statement {
@@ -120,10 +120,9 @@ data "aws_iam_policy_document" "ecr_vpc_permissions" {
     condition {
       test     = "StringEquals"
       variable = "ec2:Subnet"
-      values = formatlist(
+      values = length(lookup(var.vpc_config, "subnets", [])) > 0 ? formatlist(
         "arn:aws:ec2:${var.aws_region}:${var.aws_account_id}:subnet/%s",
-        var.vpc_config.subnets
-      )
+        var.vpc_config.subnets): []
     }
 
     condition {
@@ -156,26 +155,27 @@ data "aws_iam_policy_document" "ecr_vpc_permissions" {
 
 # ECR Access Policy Resource
 resource "aws_iam_policy" "ecr_access_policy" {
+  count  = var.cache_enabled ? 1 : 0
   name   = "${var.project_name}-ecr-access"
-  policy = data.aws_iam_policy_document.ecr_vpc_permissions[0].json
+  policy = data.aws_iam_policy_document.ecr_vpc_permissions[count.index].json
 }
 
 # ECR Access Policy Attachment to CodeBuild Role
 resource "aws_iam_role_policy_attachment" "codebuild_ecr_vpc_policy_attachment" {
-  count      = var.enabled ? 1 : 0
-  policy_arn = aws_iam_policy.ecr_access_policy.arn
-  role       = aws_iam_role.default[0].name
+  count      = var.cache_enabled ? 1 : 0
+  policy_arn = aws_iam_policy.ecr_access_policy[count.index].arn
+  role       = aws_iam_role.default[count.index].name
 }
 
 # Data source to get the secondary artifact bucket
 data "aws_s3_bucket" "secondary_artifact" {
-  count  = var.enabled ? (var.secondary_artifact_location != null ? 1 : 0) : 0
+  count  = var.cache_enabled ? (var.secondary_artifact_location != null ? 1 : 0) : 0
   bucket = var.secondary_artifact_location
 }
 
 # Cache bucket policy for secondary artifacts (if applicable)
 resource "aws_iam_policy" "default_cache_bucket" {
-  count = var.enabled && local.s3_cache_enabled ? 1 : 0
+  count = var.cache_enabled && local.s3_cache_enabled ? 1 : 0
 
   name   = "${var.project_name}-cache-bucket"
   path   = var.iam_policy_path
@@ -185,7 +185,7 @@ resource "aws_iam_policy" "default_cache_bucket" {
 
 # Permissions for CodeBuild to interact with S3, CloudWatch, and IAM
 data "aws_iam_policy_document" "permissions" {
-  count = var.enabled ? 1 : 0
+  count = var.cache_enabled ? 1 : 0
 
   statement {
     sid = ""

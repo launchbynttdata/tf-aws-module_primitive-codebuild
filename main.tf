@@ -225,7 +225,7 @@ resource "aws_codebuild_project" "default" {
   }
 
   dynamic "vpc_config" {
-    for_each = length(var.vpc_config) > 0 ? [""] : []
+    for_each = (lookup(var.vpc_config, "vpc_id", null) != null && length(lookup(var.vpc_config, "subnets", [])) > 0 && length(lookup(var.vpc_config, "security_group_ids", [])) > 0) ? [1] : []
     content {
       vpc_id             = lookup(var.vpc_config, "vpc_id", null)
       subnets            = lookup(var.vpc_config, "subnets", null)
