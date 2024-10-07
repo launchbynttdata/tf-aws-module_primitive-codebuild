@@ -6,9 +6,9 @@ stage = "test"
 
 name = "codebuild-test"
 
-source_location = "osahon-test-020127659860/trigger_pipeline.zip"
+source_location = "https://github.com/debasish-sahoo-nttd/sample-dotnetcore-app.git"
 
-buildspec = "osahon-test-020127659860/buildspec.yml"
+buildspec = "buildspec.yml"
 
 
 
@@ -35,3 +35,27 @@ environment_variables = [
 cache_expiration_days = 7
 
 cache_type = "S3"
+
+artifacts = [ {
+  artifact_identifier = "primary-artifacts"
+  type = "NO_ARTIFACTS"
+  location = null
+  name = null
+  path = null
+  namespace_type = null
+  packaging = null
+  encryption_disabled = false
+  override_artifact_name = false
+} ]
+
+secondary_artifacts = [ {
+  artifact_identifier = "secondary-artifact"
+  type = "NO_ARTIFACTS"
+  location = null
+  name = null
+  path = null
+  namespace_type = null
+  packaging = null
+  encryption_disabled = false
+  override_artifact_name = false
+} ]

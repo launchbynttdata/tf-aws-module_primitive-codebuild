@@ -307,6 +307,32 @@
 #     name => value
 #     if length(value) > 0
 #   }
+# artifacts {
+#     type = var.artifacts[0].type
+#     location = var.artifacts[0].location
+#     name = var.artifacts[0].name
+#     path = var.artifacts[0].Path
+#     namespace_type = var.artifacts[0].namespace_type
+#     packaging = var.artifacts[0].packaging
+#     encryption_disabled = var.artifacts[0].encryption_disabled
+#     override_artifact_name = var.artifacts[0].override_artifact_name
+#   }
+
+# # Secondary Artifacts
+#   dynamic "secondary_artifacts" {
+#     for_each = slice(var.secondary_artifacts, 1, length(var.secondary_artifacts))
+#     content {
+#       artifact_identifier = secondary_artifacts.value.artifact_identifier
+#       type                = secondary_artifacts.value.type
+#       location            = secondary_artifacts.value.location
+#       name                = secondary_artifacts.value.name
+#       path                = secondary_artifacts.value.path
+#       namespace_type      = secondary_artifacts.value.namespace_type
+#       packaging           = secondary_artifacts.value.packaging
+#       encryption_disabled = secondary_artifacts.value.encryption_disabled
+#       override_artifact_name = secondary_artifacts.value.override_artifact_name
+#     }
+#   }
 
 #   artifacts {
 #     type     = var.artifact_type
@@ -425,6 +451,7 @@
 #       git_clone_depth     = secondary_source.value.git_clone_depth
 #       location            = secondary_source.value.location
 #       source_identifier   = secondary_source.value.source_identifier
+# buildspec = secondary_source.value.buildspec
 #       type                = secondary_source.value.type
 #       insecure_ssl        = secondary_source.value.insecure_ssl
 #       report_build_status = secondary_source.value.report_build_status

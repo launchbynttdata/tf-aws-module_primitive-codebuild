@@ -48,11 +48,41 @@ variable "source_location" {
 variable "source_type" {
   description = "The source type for CodeBuild (e.g., S3, GITHUB, CODECOMMIT)"
   type        = string
-  default     = "S3"
+  default     = "GITHUB"
 }
 
 variable "buildspec" {
   description = "Path to the buildspec.yml file"
   type        = string
   default     = "buildspec.yml"
+}
+
+variable "artifacts" {
+  description = "list of artifacts for the codebuild project"
+  type = list(object({
+    artifact_identifier    = string
+    type                   = string
+    location               = string
+    name                   = string
+    path                   = string
+    namespace_type         = string
+    packaging              = string
+    encryption_disabled    = bool
+    override_artifact_name = bool
+  }))
+}
+
+variable "secondary_artifacts" {
+  description = "List of secondary artifacts for the codebuild project"
+  type = list(object({
+    artifact_identifier    = string
+    type                   = string
+    location               = string
+    name                   = string
+    path                   = string
+    namespace_type         = string
+    packaging              = string
+    encryption_disabled    = bool
+    override_artifact_name = bool
+  }))
 }

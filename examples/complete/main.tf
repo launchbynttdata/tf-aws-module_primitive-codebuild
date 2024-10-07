@@ -12,7 +12,9 @@ module "codebuild" {
   buildspec                   = var.buildspec
   artifact_type               = "NO_ARTIFACTS"
 
-  context = module.this.context
+  context             = module.this.context
+  artifacts           = var.artifacts
+  secondary_artifacts = var.secondary_artifacts
 
 }
 

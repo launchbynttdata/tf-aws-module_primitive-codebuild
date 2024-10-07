@@ -75,6 +75,7 @@ variable "environment_variables" {
       name  = string
       value = string
       type  = string
+      type  = string
   }))
 
   default = [
@@ -303,4 +304,35 @@ variable "log_tracker" {
 variable "project_name" {
   description = "Name of the project for identification"
   type        = string
+  type        = string
+}
+
+variable "artifacts" {
+  description = "list of artifacts for the codebuild project"
+  type = list(object({
+    artifact_identifier    = string
+    type                   = string
+    location               = string
+    name                   = string
+    path                   = string
+    namespace_type         = string
+    packaging              = string
+    encryption_disabled    = bool
+    override_artifact_name = bool
+  }))
+}
+
+variable "secondary_artifacts" {
+  description = "List of secondary artifacts for the codebuild project"
+  type = list(object({
+    artifact_identifier    = string
+    type                   = string
+    location               = string
+    name                   = string
+    path                   = string
+    namespace_type         = string
+    packaging              = string
+    encryption_disabled    = bool
+    override_artifact_name = bool
+  }))
 }
