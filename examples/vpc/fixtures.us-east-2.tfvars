@@ -33,3 +33,27 @@ environment_variables = [
 cache_expiration_days = 7
 
 cache_type = "S3"
+
+artifacts = [{
+  artifact_identifier    = "primary-artifacts"
+  type                   = "NO_ARTIFACTS"
+  location               = null
+  name                   = null
+  path                   = null
+  namespace_type         = null
+  packaging              = null
+  encryption_disabled    = false
+  override_artifact_name = false
+}]
+
+secondary_artifacts = [{
+  artifact_identifier    = "secondary-artifact"
+  type                   = "NO_ARTIFACTS"
+  location               = null
+  name                   = null
+  path                   = null
+  namespace_type         = null
+  packaging              = null
+  encryption_disabled    = false
+  override_artifact_name = false
+}]

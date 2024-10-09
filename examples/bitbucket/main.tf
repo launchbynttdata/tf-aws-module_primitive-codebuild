@@ -1,8 +1,3 @@
-provider "aws" {
-  region  = var.aws_region
-  profile = var.aws_profile
-}
-
 
 locals {
   repository_name = var.repository_name
@@ -47,3 +42,4 @@ resource "null_resource" "codebuild_provisioner" {
 
   depends_on = [module.build, aws_ecr_repository.ecr_repo]
 }
+

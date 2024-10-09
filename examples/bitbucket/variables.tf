@@ -75,13 +75,13 @@ variable "environment_variables" {
       name  = string
       value = string
       type  = string
-      type  = string
   }))
 
   default = [
     {
       name  = "NO_ADDITIONAL_BUILD_VARS"
       value = "TRUE"
+      type  = null
   }]
 
   description = "A list of maps, that contain both the key 'name' and the key 'value' to be used as additional environment variables for the build"
@@ -303,7 +303,6 @@ variable "log_tracker" {
 
 variable "project_name" {
   description = "Name of the project for identification"
-  type        = string
   type        = string
 }
 

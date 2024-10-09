@@ -155,16 +155,16 @@ data "aws_iam_policy_document" "ecr_vpc_permissions" {
 
 # ECR Access Policy Resource
 resource "aws_iam_policy" "ecr_access_policy" {
-  count  = var.cache_enabled ? 1 : 0
+  count  = var.create_ecr_access_policy && length(data.aws_iam_policy_document.ecr_vpc_permissions) > 0 ? 1 : 0
   name   = "${var.project_name}-ecr-access"
-  policy = data.aws_iam_policy_document.ecr_vpc_permissions[count.index].json
+  policy = data.aws_iam_policy_document.ecr_vpc_permissions[0].json 
 }
 
 # ECR Access Policy Attachment to CodeBuild Role
 resource "aws_iam_role_policy_attachment" "codebuild_ecr_vpc_policy_attachment" {
-  count      = var.cache_enabled ? 1 : 0
-  policy_arn = aws_iam_policy.ecr_access_policy[count.index].arn
-  role       = aws_iam_role.default[count.index].name
+  count      = var.create_ecr_access_policy && length(data.aws_iam_policy_document.ecr_vpc_permissions) > 0 ? 1 : 0
+  policy_arn = aws_iam_policy.ecr_access_policy[0].arn
+  role       = aws_iam_role.default[0].name
 }
 
 # Data source to get the secondary artifact bucket

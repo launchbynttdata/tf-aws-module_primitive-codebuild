@@ -6,7 +6,10 @@ resource "aws_ecr_repository" "ecr_repo" {
     scan_on_push = var.scan_on_push
   }
 
-  tags = ["example"]
+  tags = {
+    name = "default"
+    env  = "sandbox"
+  }
 }
 
 resource "aws_ecr_lifecycle_policy" "lifecycle" {

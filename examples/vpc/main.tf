@@ -1,6 +1,3 @@
-provider "aws" {
-  region = var.region
-}
 
 module "vpc" {
   source                  = "cloudposse/vpc/aws"
@@ -29,17 +26,20 @@ module "codebuild" {
   environment_variables       = var.environment_variables
   cache_expiration_days       = var.cache_expiration_days
   cache_type                  = var.cache_type
-  project_name = var.project_name
+  project_name                = var.project_name
+  aws_region                  = var.region
 
-  # vpc_config = {
-  #   vpc_id = module.vpc.vpc_id
+  vpc_config = {
+    vpc_id = module.vpc.vpc_id
 
-  #   subnets = module.subnets.private_subnet_ids
+    subnets = module.subnets.private_subnet_ids
 
-  #   security_group_ids = [
-  #     module.vpc.vpc_default_security_group_id
-  #   ]
-  # }
+    security_group_ids = [
+      module.vpc.vpc_default_security_group_id
+    ]
+  }
 
-  # context = module.this.context
+  context             = module.this.context
+  artifacts           = var.artifacts
+  secondary_artifacts = var.secondary_artifacts
 }

@@ -246,7 +246,7 @@ variable "source_type" {
 
 # https://registry.terraform.io/providers/hashicorp/aws/latest/docs/resources/codebuild_project#vpc_config
 variable "vpc_config" {
-  type        = map(any)
+  type        = any
   default     = {}
   description = "Configuration for the builds to run inside a VPC."
 }
@@ -341,6 +341,12 @@ variable "enable_github_authentication" {
     If true, it uses the github_token  and github_token_type must be of type SECRETS_MANAGER to authenticate
   EOF
   default     = false
+}
+
+variable "create_ecr_access_policy" {
+  type = bool
+  description = "Whether to create the ECR access policy"
+  default = true
 }
 
 variable "create_webhooks" {

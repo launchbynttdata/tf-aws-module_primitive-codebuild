@@ -7,20 +7,32 @@ resource "aws_s3_bucket" "cache_bucket" {
   bucket        = local.cache_bucket_name_normalised
   force_destroy = true
   tags          = var.tags
-}
 
-resource "aws_s3_bucket_server_side_encryption_configuration" "cache_bucket_encryption" {
-  bucket = aws_s3_bucket.cache_bucket[0].id
-  rule {
-    apply_server_side_encryption_by_default {
-      sse_algorithm = "AES256"
-    }
+  dynamic "logging" {
+    for_each = var.access_log_bucket_name != "" ? [1] : []
+      content {
+        target_bucket =var.access_log_bucket_name
+        target_prefix = "logs/${var.project_name}"
+      }
   }
-
+  dynamic "server_side_encryption_configuration" {
+    for_each = var.encryption_enabled ? [1] : []
+    content {
+      rule {
+        apply_server_side_encryption_by_default {
+          sse_algorithm = "AES256"
+        }
+      }
+    }
+    
+  }
 }
+
+
 # S3 Bucket Versioning (New syntax using a separate resource)
 resource "aws_s3_bucket_versioning" "cache_bucket_versioning" {
-  bucket = aws_s3_bucket.cache_bucket[0].id
+  count = module.this.enabled && local.create_s3_cache_bucket ? 1 : 0
+  bucket = aws_s3_bucket.cache_bucket.*.id[0] 
 
   versioning_configuration {
     status = var.versioning_enabled ? "Enabled" : "Suspended"
@@ -29,7 +41,8 @@ resource "aws_s3_bucket_versioning" "cache_bucket_versioning" {
 
 # S3 Bucket Lifecycle Configuration (New syntax using a separate resource)
 resource "aws_s3_bucket_lifecycle_configuration" "cache_bucket_lifecycle" {
-  bucket = aws_s3_bucket.cache_bucket[0].id
+  count = module.this.enabled && local.create_s3_cache_bucket ? 1 : 0
+  bucket = aws_s3_bucket.cache_bucket.*.id[0]
 
   rule {
     id     = "codebuildcache"
@@ -122,7 +135,7 @@ resource "aws_codebuild_project" "default" {
       # unless path was also set to '/'.
       # path = "/"
       #name = "/"
-#}
+# }
   
 
   cache {

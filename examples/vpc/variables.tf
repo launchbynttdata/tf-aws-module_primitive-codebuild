@@ -47,6 +47,36 @@ variable "cache_type" {
 }
 
 variable "project_name" {
-  type = string
+  type    = string
   default = "build"
+}
+
+variable "artifacts" {
+  description = "list of artifacts for the codebuild project"
+  type = list(object({
+    artifact_identifier    = string
+    type                   = string
+    location               = string
+    name                   = string
+    path                   = string
+    namespace_type         = string
+    packaging              = string
+    encryption_disabled    = bool
+    override_artifact_name = bool
+  }))
+}
+
+variable "secondary_artifacts" {
+  description = "List of secondary artifacts for the codebuild project"
+  type = list(object({
+    artifact_identifier    = string
+    type                   = string
+    location               = string
+    name                   = string
+    path                   = string
+    namespace_type         = string
+    packaging              = string
+    encryption_disabled    = bool
+    override_artifact_name = bool
+  }))
 }
