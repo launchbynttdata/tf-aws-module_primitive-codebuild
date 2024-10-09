@@ -1,3 +1,10 @@
+variable "sse_algorithm" {
+  type = string
+  default = "AES256"
+  description = "Server side encryption algorithm for cache S3 bucket"
+  
+}
+
 variable "environment_variables" {
   type = list(object(
     {
@@ -8,11 +15,11 @@ variable "environment_variables" {
   ))
 
   default = [
-    {
-      name  = "NO_ADDITIONAL_BUILD_VARS"
-      value = "TRUE"
-      type  = "PLAINTEXT"
-    }
+  #   {
+  #     name  = "NO_ADDITIONAL_BUILD_VARS"
+  #     value = "TRUE"
+  #     type  = "PLAINTEXT"
+  #   }
   ]
 
   description = "A list of maps, that contain the keys 'name', 'value', and 'type' to be used as additional environment variables for the build. Valid types are 'PLAINTEXT', 'PARAMETER_STORE', or 'SECRETS_MANAGER'"

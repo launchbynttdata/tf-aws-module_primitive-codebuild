@@ -22,14 +22,35 @@ environment_variables = [
   },
   {
     name  = "COMPANY_NAME"
-    value = "Cloud Posse"
+    value = "test-build"
     type  = "PLAINTEXT"
   },
   {
     name  = "TIME_ZONE"
     value = "America/Los_Angeles"
     type  = "PLAINTEXT"
+  },
+  {
+      name = "AWS_REGION"
+      value = "us-east-2"
+      type = "PLAINTEXT"
+  },
+  {
+    name = "AWS_ACCOUNT_ID"
+    value = "020127659860"
+    type = "PLAINTEXT"
+  },
+  {
+    name = "IMAGE_REPO_NAME"
+    value = "UNSET"
+    type = "PLAINTEXT"
+  },
+  {
+    name = "IMAGE_TAG"
+    value = "latest"
+    type = "PLAINTEXT"
   }
+
 ]
 
 cache_expiration_days = 7

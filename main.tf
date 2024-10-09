@@ -10,29 +10,29 @@ resource "aws_s3_bucket" "cache_bucket" {
 
   dynamic "logging" {
     for_each = var.access_log_bucket_name != "" ? [1] : []
-      content {
-        target_bucket =var.access_log_bucket_name
-        target_prefix = "logs/${var.project_name}"
-      }
+    content {
+      target_bucket = var.access_log_bucket_name
+      target_prefix = "logs/${var.project_name}"
+    }
   }
   dynamic "server_side_encryption_configuration" {
     for_each = var.encryption_enabled ? [1] : []
     content {
       rule {
         apply_server_side_encryption_by_default {
-          sse_algorithm = "AES256"
+          sse_algorithm = var.sse_algorithm
         }
       }
     }
-    
+
   }
 }
 
 
 # S3 Bucket Versioning (New syntax using a separate resource)
 resource "aws_s3_bucket_versioning" "cache_bucket_versioning" {
-  count = module.this.enabled && local.create_s3_cache_bucket ? 1 : 0
-  bucket = aws_s3_bucket.cache_bucket.*.id[0] 
+  count  = module.this.enabled && local.create_s3_cache_bucket ? 1 : 0
+  bucket = aws_s3_bucket.cache_bucket.*.id[0]
 
   versioning_configuration {
     status = var.versioning_enabled ? "Enabled" : "Suspended"
@@ -41,7 +41,7 @@ resource "aws_s3_bucket_versioning" "cache_bucket_versioning" {
 
 # S3 Bucket Lifecycle Configuration (New syntax using a separate resource)
 resource "aws_s3_bucket_lifecycle_configuration" "cache_bucket_lifecycle" {
-  count = module.this.enabled && local.create_s3_cache_bucket ? 1 : 0
+  count  = module.this.enabled && local.create_s3_cache_bucket ? 1 : 0
   bucket = aws_s3_bucket.cache_bucket.*.id[0]
 
   rule {
@@ -86,7 +86,7 @@ resource "aws_codebuild_project" "default" {
   build_timeout          = var.build_timeout
   source_version         = var.source_version != "" ? var.source_version : null
   encryption_key         = var.encryption_key
-  
+
 
   tags = {
     for name, value in module.this.tags :
@@ -127,16 +127,16 @@ resource "aws_codebuild_project" "default" {
   # would need to be secondary if there were more than one. For reference, see
   # https://docs.aws.amazon.com/codepipeline/latest/userguide/action-reference-CodeBuild.html#action-reference-CodeBuild-config.
 
-      # According to AWS documention, in order to have the artifacts written
-      # to the root of the bucket, the 'namespace_type' should be 'NONE'
-      # (which is the default), 'name' should be '/', and 'path' should be
-      # empty. For reference, see https://docs.aws.amazon.com/codebuild/latest/APIReference/API_ProjectArtifacts.html.
-      # However, I was unable to get this to deploy to the root of the bucket
-      # unless path was also set to '/'.
-      # path = "/"
-      #name = "/"
-# }
-  
+  # According to AWS documention, in order to have the artifacts written
+  # to the root of the bucket, the 'namespace_type' should be 'NONE'
+  # (which is the default), 'name' should be '/', and 'path' should be
+  # empty. For reference, see https://docs.aws.amazon.com/codebuild/latest/APIReference/API_ProjectArtifacts.html.
+  # However, I was unable to get this to deploy to the root of the bucket
+  # unless path was also set to '/'.
+  # path = "/"
+  #name = "/"
+  # }
+
 
   cache {
     type     = lookup(local.cache, "type", null)
@@ -150,49 +150,6 @@ resource "aws_codebuild_project" "default" {
     image_pull_credentials_type = var.build_image_pull_credentials_type
     type                        = var.build_type
     privileged_mode             = var.privileged_mode
-
-    environment_variable {
-      name  = "AWS_REGION"
-      value = signum(length(var.aws_region)) == 1 ? var.aws_region : data.aws_region.default.name
-    }
-
-    environment_variable {
-      name  = "AWS_ACCOUNT_ID"
-      value = signum(length(var.aws_account_id)) == 1 ? var.aws_account_id : data.aws_caller_identity.default.account_id
-    }
-
-    dynamic "environment_variable" {
-      for_each = signum(length(var.image_repo_name)) == 1 ? [""] : []
-      content {
-        name  = "IMAGE_REPO_NAME"
-        value = var.image_repo_name
-      }
-    }
-
-    dynamic "environment_variable" {
-      for_each = signum(length(var.image_tag)) == 1 ? [""] : []
-      content {
-        name  = "IMAGE_TAG"
-        value = var.image_tag
-      }
-    }
-
-    dynamic "environment_variable" {
-      for_each = signum(length(module.this.stage)) == 1 ? [""] : []
-      content {
-        name  = "STAGE"
-        value = module.this.stage
-      }
-    }
-
-    dynamic "environment_variable" {
-      for_each = signum(length(var.github_token)) == 1 ? [""] : []
-      content {
-        name  = "GITHUB_TOKEN"
-        value = var.github_token
-        type  = var.github_token_type
-      }
-    }
 
     dynamic "environment_variable" {
       for_each = var.environment_variables
