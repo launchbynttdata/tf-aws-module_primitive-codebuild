@@ -73,7 +73,7 @@ resource "aws_codebuild_project" "default" {
   name                   = var.project_name
   description            = var.description
   concurrent_build_limit = var.concurrent_build_limit
-  service_role           = join("", aws_iam_role.default.*.arn)
+  service_role           = join("", var.service_role_arn)
   badge_enabled          = var.badge_enabled
   build_timeout          = var.build_timeout
   source_version         = var.source_version != "" ? var.source_version : null

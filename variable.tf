@@ -140,6 +140,11 @@ variable "image_tag" {
   description = "(Optional) Docker image tag in the ECR repository, e.g. 'latest'. Used as CodeBuild ENV variable when building Docker images. For more info: http://docs.aws.amazon.com/codebuild/latest/userguide/sample-docker.html"
 }
 
+variable "service_role_arn" {
+  type = list(string)
+  description = "The ARN of the IAM rol for Codebuild. This is to be provided by the user"
+}
+
 variable "secondary_sources" {
   type = list(object(
     {

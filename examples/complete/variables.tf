@@ -102,3 +102,84 @@ variable "source_credential_user_name" {
   default     = ""
   description = "The Bitbucket username when the authType is BASIC_AUTH. This parameter is not valid for other types of source providers or connections."
 }
+
+variable "service_role_arn" {
+  type = list(string)
+  description = "The ARN of the IAM rol for Codebuild. This is to be provided by the user"
+}
+
+variable "cache_enabled" {
+  type        = bool
+  description = "Flag to enable or disable the module"
+  default     = true
+}
+
+variable "iam_role_path" {
+  type        = string
+  default     = null
+  description = "Path to the role."
+}
+
+variable "iam_permissions_boundary" {
+  type        = string
+  default     = null
+  description = "ARN of the policy that is used to set the permissions boundary for the role."
+}
+
+variable "codebuild_iam" {
+  description = "Additional IAM policies to add to CodePipeline IAM role."
+  type        = string
+  default     = null
+}
+
+# https://registry.terraform.io/providers/hashicorp/aws/latest/docs/resources/codebuild_project#vpc_config
+variable "vpc_config" {
+  type        = any
+  default     = {}
+  description = "Configuration for the builds to run inside a VPC."
+}
+
+variable "iam_policy_path" {
+  type        = string
+  default     = "/service-role/"
+  description = "Path to the policy."
+}
+
+variable "s3_cache_bucket_name" {
+  type        = string
+  default     = null
+  description = "Use an existing s3 bucket name for cache. Relevant if `cache_type` is set to `S3`."
+}
+
+variable "local_cache_modes" {
+  default     = "NO_CACHE"
+  description = "The type of storage that will be used for the AWS CodeBuild project cache. Valid values: NO_CACHE, LOCAL, and S3.  Defaults to NO_CACHE.  If cache_type is S3, it will create an S3 bucket for storing codebuild cache inside"
+}
+
+variable "aws_region" {
+  description = "(Optional) If set to true, enables running the Docker daemon inside a Docker container on the CodeBuild instance. Used when building Docker images"
+}
+
+variable "aws_account_id" {
+  type        = string
+  default     = ""
+  description = "(Optional) AWS Account ID. Used as CodeBuild ENV variable when building Docker images. For more info: http://docs.aws.amazon.com/codebuild/latest/userguide/sample-docker.html"
+}
+
+variable "create_ecr_access_policy" {
+  type = bool
+  description = "Whether to create the ECR access policy"
+  default = true
+}
+
+variable "secondary_artifact_location" {
+  type        = string
+  default     = null
+  description = "Location of secondary artifact. Must be an S3 reference"
+}
+
+variable "extra_permissions" {
+  type        = list(any)
+  default     = []
+  description = "List of action strings which will be added to IAM service account permissions."
+}

@@ -1,3 +1,5 @@
+project_name = "codebuild_osahon"
+
 region = "us-east-2"
 
 namespace = "eg"
@@ -82,3 +84,4 @@ secondary_artifacts = [ {
   encryption_disabled = false
   override_artifact_name = false
 } ]
+
