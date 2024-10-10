@@ -19,5 +19,9 @@ module "codebuild" {
 
   artifacts = var.artifacts
   secondary_artifacts = var.secondary_artifacts
+  source_credential_auth_type = ""
+  source_credential_server_type = ""
+  source_credential_user_name = ""
+  
 
 }

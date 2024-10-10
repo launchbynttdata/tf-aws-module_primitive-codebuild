@@ -211,13 +211,11 @@ variable "private_repository" {
 
 variable "source_credential_auth_type" {
   type        = string
-  default     = "PERSONAL_ACCESS_TOKEN"
   description = "The type of authentication used to connect to a GitHub, GitHub Enterprise, or Bitbucket repository."
 }
 
 variable "source_credential_server_type" {
   type        = string
-  default     = "GITHUB"
   description = "The source provider used for this project."
 }
 
@@ -247,7 +245,6 @@ variable "fetch_git_submodules" {
 
 variable "source_type" {
   type        = string
-  default     = "CODEPIPELINE"
   description = "The type of repository that contains the source code to be built. Valid values for this parameter are: CODECOMMIT, CODEPIPELINE, GITHUB, GITHUB_ENTERPRISE, BITBUCKET or S3"
 }
 

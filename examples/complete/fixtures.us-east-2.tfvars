@@ -6,6 +6,8 @@ stage = "test"
 
 name = "codebuild-test"
 
+source_type = "GITHUB"
+
 source_location = "https://github.com/debasish-sahoo-nttd/sample-dotnetcore-app.git"
 
 buildspec = "buildspec.yml"

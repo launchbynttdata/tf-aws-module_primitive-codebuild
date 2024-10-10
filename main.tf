@@ -68,14 +68,6 @@ resource "random_string" "bucket_prefix" {
   lower   = true
 }
 
-resource "aws_codebuild_source_credential" "authorization" {
-  count       = module.this.enabled && var.private_repository ? 1 : 0
-  auth_type   = var.source_credential_auth_type
-  server_type = var.source_credential_server_type
-  token       = var.source_credential_token
-  user_name   = var.source_credential_user_name
-}
-
 resource "aws_codebuild_project" "default" {
   count                  = module.this.enabled ? 1 : 0
   name                   = var.project_name
@@ -254,9 +246,10 @@ data "aws_secretsmanager_secret_version" "current_secret" {
 # Aunthenticate with Github
 resource "aws_codebuild_source_credential" "github_authentication" {
   count       = var.enable_github_authentication ? 1 : 0
-  auth_type   = "PERSONAL_ACCESS_TOKEN"
-  server_type = "GITHUB"
+  auth_type   = var.source_credential_auth_type
+  server_type = var.source_credential_server_type
   token       = data.aws_secretsmanager_secret_version.current_secret[0].secret_string
+  user_name   = var.source_credential_user_name
 }
 
 # Set up webhook for Github, Bitbucket
