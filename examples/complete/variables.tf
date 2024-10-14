@@ -36,7 +36,7 @@ variable "cache_type" {
   description = "The type of storage that will be used for the AWS CodeBuild project cache. Valid values: NO_CACHE, LOCAL, and S3.  Defaults to NO_CACHE.  If cache_type is S3, it will create an S3 bucket for storing codebuild cache inside"
 }
 variable "project_name" {
-  type    = string
+  type = string
 }
 
 variable "source_location" {
@@ -104,8 +104,8 @@ variable "source_credential_user_name" {
 }
 
 variable "service_role_arn" {
-  type = list(string)
-  description = "The ARN of the IAM rol for Codebuild. This is to be provided by the user"
+  type        = string
+  description = "The ARN of the IAM role for Codebuild. This is to be provided by the user"
 }
 
 variable "cache_enabled" {
@@ -156,10 +156,6 @@ variable "local_cache_modes" {
   description = "The type of storage that will be used for the AWS CodeBuild project cache. Valid values: NO_CACHE, LOCAL, and S3.  Defaults to NO_CACHE.  If cache_type is S3, it will create an S3 bucket for storing codebuild cache inside"
 }
 
-variable "aws_region" {
-  description = "(Optional) If set to true, enables running the Docker daemon inside a Docker container on the CodeBuild instance. Used when building Docker images"
-}
-
 variable "aws_account_id" {
   type        = string
   default     = ""
@@ -167,9 +163,9 @@ variable "aws_account_id" {
 }
 
 variable "create_ecr_access_policy" {
-  type = bool
+  type        = bool
   description = "Whether to create the ECR access policy"
-  default = true
+  default     = true
 }
 
 variable "secondary_artifact_location" {
@@ -182,4 +178,21 @@ variable "extra_permissions" {
   type        = list(any)
   default     = []
   description = "List of action strings which will be added to IAM service account permissions."
+}
+
+variable "create_resources" {
+  type = bool
+  description = "whether to create the IAM resources"
+}
+
+variable "cache_type" {
+  type        = string
+  default     = "NO_CACHE"
+  description = "The type of storage that will be used for the AWS CodeBuild project cache. Valid values: NO_CACHE, LOCAL, and S3.  Defaults to NO_CACHE.  If cache_type is S3, the name of the S3 bucket will need to be provided"
+}
+
+variable "local_caches_modes" {
+  type        = string
+  default     = "LOCAL_CUSTOM_CACHE"
+  description = "The type of data caching between builds. The inputs values are LOCAL_SOURCE_CACHE, LOCAL_DOCKER_LAYER_CACHE, LOCAL_CUSTOM_CACHE"
 }

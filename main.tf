@@ -1,63 +1,101 @@
 data "aws_caller_identity" "default" {}
 data "aws_region" "default" {}
 
-# S3 Bucket for Cache
-resource "aws_s3_bucket" "cache_bucket" {
-  count         = module.this.enabled && local.create_s3_cache_bucket ? 1 : 0
-  bucket        = local.cache_bucket_name_normalised
-  force_destroy = true
-  tags          = var.tags
+# locals {
+#   # Construct the S3 cache bucket name
+#   cache_bucket_name = "${var.project_name}${var.cache_bucket_suffix_enabled ? "-${join("", random_string.bucket_prefix.*.result)}" : ""}"
 
-  dynamic "logging" {
-    for_each = var.access_log_bucket_name != "" ? [1] : []
-    content {
-      target_bucket = var.access_log_bucket_name
-      target_prefix = "logs/${var.project_name}"
-    }
-  }
-  dynamic "server_side_encryption_configuration" {
-    for_each = var.encryption_enabled ? [1] : []
-    content {
-      rule {
-        apply_server_side_encryption_by_default {
-          sse_algorithm = var.sse_algorithm
-        }
-      }
-    }
+#   # Normalize the cache bucket name, ensuring it's lowercase and using hyphens
+#   cache_bucket_name_normalised = substr(
+#     join("-", split("_", lower(local.cache_bucket_name))),
+#     0,
+#     min(length(local.cache_bucket_name), 63),
+#   )
 
-  }
-}
+#   # Determine if the cache type is S3 and if the bucket should be created
+#   s3_cache_enabled       = var.cache_type == "S3"
+#   create_s3_cache_bucket = local.s3_cache_enabled && var.s3_cache_bucket_name == null
+
+#   # Set the bucket name based on whether it's dynamically created or provided
+#   s3_bucket_name = local.create_s3_cache_bucket ? aws_s3_bucket.cache_bucket[0].bucket : var.s3_cache_bucket_name
+
+#   # Cache options for the CodeBuild project
+#   cache_options = {
+#     "S3" = {
+#       type     = "S3"
+#       location = local.s3_bucket_name
+#     },
+#     "LOCAL" = {
+#       type  = "LOCAL"
+#       modes = var.local_cache_modes
+#     },
+#     "NO_CACHE" = {
+#       type = "NO_CACHE"
+#     }
+#   }
+
+#   # Final cache settings based on the cache type
+#   cache = local.cache_options[var.cache_type]
+# }
 
 
-# S3 Bucket Versioning (New syntax using a separate resource)
-resource "aws_s3_bucket_versioning" "cache_bucket_versioning" {
-  count  = module.this.enabled && local.create_s3_cache_bucket ? 1 : 0
-  bucket = aws_s3_bucket.cache_bucket.*.id[0]
+# # S3 Bucket for Cache
+# resource "aws_s3_bucket" "cache_bucket" {
+#   count         = module.this.enabled && local.create_s3_cache_bucket ? 1 : 0
+#   bucket        = local.cache_bucket_name_normalised
+#   force_destroy = true
+#   tags          = var.tags
 
-  versioning_configuration {
-    status = var.versioning_enabled ? "Enabled" : "Suspended"
-  }
-}
+#   dynamic "logging" {
+#     for_each = var.access_log_bucket_name != "" ? [1] : []
+#     content {
+#       target_bucket = var.access_log_bucket_name
+#       target_prefix = "logs/${var.project_name}"
+#     }
+#   }
+#   dynamic "server_side_encryption_configuration" {
+#     for_each = var.encryption_enabled ? [1] : []
+#     content {
+#       rule {
+#         apply_server_side_encryption_by_default {
+#           sse_algorithm = var.sse_algorithm
+#         }
+#       }
+#     }
 
-# S3 Bucket Lifecycle Configuration (New syntax using a separate resource)
-resource "aws_s3_bucket_lifecycle_configuration" "cache_bucket_lifecycle" {
-  count  = module.this.enabled && local.create_s3_cache_bucket ? 1 : 0
-  bucket = aws_s3_bucket.cache_bucket.*.id[0]
+#   }
+# }
 
-  rule {
-    id     = "codebuildcache"
-    status = var.lifecycle_rule_enabled ? "Enabled" : "Disabled"
 
-    filter {
-      prefix = "/"
-    }
+# # S3 Bucket Versioning (New syntax using a separate resource)
+# resource "aws_s3_bucket_versioning" "cache_bucket_versioning" {
+#   count  = module.this.enabled && local.create_s3_cache_bucket ? 1 : 0
+#   bucket = aws_s3_bucket.cache_bucket.*.id[0]
 
-    expiration {
-      days = var.cache_expiration_days
-    }
+#   versioning_configuration {
+#     status = var.versioning_enabled ? "Enabled" : "Suspended"
+#   }
+# }
 
-  }
-}
+# # S3 Bucket Lifecycle Configuration (New syntax using a separate resource)
+# resource "aws_s3_bucket_lifecycle_configuration" "cache_bucket_lifecycle" {
+#   count  = module.this.enabled && local.create_s3_cache_bucket ? 1 : 0
+#   bucket = aws_s3_bucket.cache_bucket.*.id[0]
+
+#   rule {
+#     id     = "codebuildcache"
+#     status = var.lifecycle_rule_enabled ? "Enabled" : "Disabled"
+
+#     filter {
+#       prefix = "/"
+#     }
+
+#     expiration {
+#       days = var.cache_expiration_days
+#     }
+
+#   }
+# }
 
 resource "random_string" "bucket_prefix" {
   count   = module.this.enabled ? 1 : 0
@@ -73,7 +111,7 @@ resource "aws_codebuild_project" "default" {
   name                   = var.project_name
   description            = var.description
   concurrent_build_limit = var.concurrent_build_limit
-  service_role           = join("", var.service_role_arn)
+  service_role           = var.service_role_arn
   badge_enabled          = var.badge_enabled
   build_timeout          = var.build_timeout
   source_version         = var.source_version != "" ? var.source_version : null
@@ -131,9 +169,9 @@ resource "aws_codebuild_project" "default" {
 
 
   cache {
-    type     = lookup(local.cache, "type", null)
-    location = lookup(local.cache, "location", null)
-    modes    = lookup(local.cache, "modes", null)
+    type     = var.cache_type
+    location = var.s3_cache_bucket_name
+    modes = [var.local_caches_modes]
   }
 
   environment {

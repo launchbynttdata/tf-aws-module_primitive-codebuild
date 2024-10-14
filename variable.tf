@@ -1,8 +1,8 @@
 variable "sse_algorithm" {
-  type = string
-  default = "AES256"
+  type        = string
+  default     = "AES256"
   description = "Server side encryption algorithm for cache S3 bucket"
-  
+
 }
 
 variable "environment_variables" {
@@ -15,11 +15,11 @@ variable "environment_variables" {
   ))
 
   default = [
-  #   {
-  #     name  = "NO_ADDITIONAL_BUILD_VARS"
-  #     value = "TRUE"
-  #     type  = "PLAINTEXT"
-  #   }
+    #   {
+    #     name  = "NO_ADDITIONAL_BUILD_VARS"
+    #     value = "TRUE"
+    #     type  = "PLAINTEXT"
+    #   }
   ]
 
   description = "A list of maps, that contain the keys 'name', 'value', and 'type' to be used as additional environment variables for the build. Valid types are 'PLAINTEXT', 'PARAMETER_STORE', or 'SECRETS_MANAGER'"
@@ -51,12 +51,13 @@ variable "cache_bucket_suffix_enabled" {
 variable "cache_type" {
   type        = string
   default     = "NO_CACHE"
-  description = "The type of storage that will be used for the AWS CodeBuild project cache. Valid values: NO_CACHE, LOCAL, and S3.  Defaults to NO_CACHE.  If cache_type is S3, it will create an S3 bucket for storing codebuild cache inside"
+  description = "The type of storage that will be used for the AWS CodeBuild project cache. Valid values: NO_CACHE, LOCAL, and S3.  Defaults to NO_CACHE.  If cache_type is S3, the name of the S3 bucket will need to be provided"
 }
 
-variable "local_cache_modes" {
-  default     = "NO_CACHE"
-  description = "The type of storage that will be used for the AWS CodeBuild project cache. Valid values: NO_CACHE, LOCAL, and S3.  Defaults to NO_CACHE.  If cache_type is S3, it will create an S3 bucket for storing codebuild cache inside"
+variable "local_caches_modes" {
+  type        = string
+  default     = "LOCAL_CUSTOM_CACHE"
+  description = "The type of data caching between builds. The inputs values are LOCAL_SOURCE_CACHE, LOCAL_DOCKER_LAYER_CACHE, LOCAL_CUSTOM_CACHE"
 }
 
 variable "cache_enabled" {
@@ -141,8 +142,8 @@ variable "image_tag" {
 }
 
 variable "service_role_arn" {
-  type = list(string)
-  description = "The ARN of the IAM rol for Codebuild. This is to be provided by the user"
+  type        = string
+  description = "The ARN of the IAM role for Codebuild. This is to be provided by the user"
 }
 
 variable "secondary_sources" {
@@ -353,9 +354,9 @@ variable "enable_github_authentication" {
 }
 
 variable "create_ecr_access_policy" {
-  type = bool
+  type        = bool
   description = "Whether to create the ECR access policy"
-  default = true
+  default     = true
 }
 
 variable "create_webhooks" {
@@ -380,6 +381,11 @@ variable "lifecycle_rule_enabled" {
   type        = bool
   description = "Whether to enable a suffix for the S3 cache bucket name"
   default     = true
+}
+
+variable "create_resources" {
+  type        = bool
+  description = "whether to create the IAM resources"
 }
 
 variable "artifacts" {
