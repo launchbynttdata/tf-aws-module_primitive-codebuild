@@ -14,13 +14,7 @@ variable "environment_variables" {
     }
   ))
 
-  default = [
-    #   {
-    #     name  = "NO_ADDITIONAL_BUILD_VARS"
-    #     value = "TRUE"
-    #     type  = "PLAINTEXT"
-    #   }
-  ]
+  default = []
 
   description = "A list of maps, that contain the keys 'name', 'value', and 'type' to be used as additional environment variables for the build. Valid types are 'PLAINTEXT', 'PARAMETER_STORE', or 'SECRETS_MANAGER'"
 }
@@ -40,12 +34,6 @@ variable "concurrent_build_limit" {
 variable "cache_expiration_days" {
   default     = 7
   description = "How many days should the build cache be kept. It only works when cache_type is 'S3'"
-}
-
-variable "cache_bucket_suffix_enabled" {
-  type        = bool
-  default     = true
-  description = "The cache bucket generates a random 13 character string to generate a unique bucket name. If set to false it uses terraform-null-label's id value. It only works when cache_type is 'S3"
 }
 
 variable "cache_type" {
@@ -143,7 +131,7 @@ variable "image_tag" {
 
 variable "service_role_arn" {
   type        = string
-  description = "The ARN of the IAM role for Codebuild. This is to be provided by the user"
+  description = "The ARN of the IAM role for Codebuild"
 }
 
 variable "secondary_sources" {

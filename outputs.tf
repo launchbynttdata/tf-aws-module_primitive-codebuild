@@ -8,25 +8,25 @@ output "project_id" {
   value       = join("", aws_codebuild_project.default.*.id)
 }
 
-output "role_id" {
-  description = "IAM Role ID"
-  value       = join("", aws_iam_role.default.*.id)
-}
+# output "role_id" {
+#   description = "IAM Role ID"
+#   value       = join("", aws_iam_role.default.*.id)
+# }
 
-output "role_arn" {
-  description = "IAM Role ARN"
-  value       = join("", aws_iam_role.default.*.arn)
-}
+# output "role_arn" {
+#   description = "IAM Role ARN"
+#   value       = join("", aws_iam_role.default.*.arn)
+# }
 
-output "cache_bucket_name" {
-  description = "Cache S3 bucket name"
-  value       = module.this.enabled && local.s3_cache_enabled ? join("", aws_s3_bucket.cache_bucket.*.bucket) : "UNSET"
-}
+# output "cache_bucket_name" {
+#   description = "Cache S3 bucket name"
+#   value       = module.this.enabled && local.s3_cache_enabled ? join("", aws_s3_bucket.cache_bucket.*.bucket) : "UNSET"
+# }
 
-output "cache_bucket_arn" {
-  description = "Cache S3 bucket ARN"
-  value       = module.this.enabled && local.s3_cache_enabled ? join("", aws_s3_bucket.cache_bucket.*.arn) : "UNSET"
-}
+# output "cache_bucket_arn" {
+#   description = "Cache S3 bucket ARN"
+#   value       = module.this.enabled && local.s3_cache_enabled ? join("", aws_s3_bucket.cache_bucket.*.arn) : "UNSET"
+# }
 
 output "badge_url" {
   description = "The URL of the build badge when badge_enabled is enabled"
@@ -47,7 +47,7 @@ output "codebuild_project_arn" {
   value = module.this.enabled ? aws_codebuild_project.default[0].arn : null
 }
 
-output "iam_role_arn" {
-  value = module.this.enabled ? aws_iam_role.default[0].arn : null
-}
+# output "iam_role_arn" {
+#   value = module.this.enabled ? aws_iam_role.default[0].arn : null
+# }
 

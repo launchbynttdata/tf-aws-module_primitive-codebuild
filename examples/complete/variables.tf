@@ -1,4 +1,4 @@
-variable "region" {
+variable "aws_region" {
   type        = string
   description = "AWS region"
 }
@@ -24,11 +24,6 @@ variable "environment_variables" {
 variable "cache_expiration_days" {
   type        = number
   description = "How many days should the build cache be kept. It only works when cache_type is 'S3'"
-}
-
-variable "cache_bucket_suffix_enabled" {
-  type        = bool
-  description = "The cache bucket generates a random 13 character string to generate a unique bucket name. If set to false it uses terraform-null-label's id value"
 }
 
 variable "cache_type" {
@@ -151,9 +146,10 @@ variable "s3_cache_bucket_name" {
   description = "Use an existing s3 bucket name for cache. Relevant if `cache_type` is set to `S3`."
 }
 
-variable "local_cache_modes" {
-  default     = "NO_CACHE"
-  description = "The type of storage that will be used for the AWS CodeBuild project cache. Valid values: NO_CACHE, LOCAL, and S3.  Defaults to NO_CACHE.  If cache_type is S3, it will create an S3 bucket for storing codebuild cache inside"
+variable "local_caches_modes" {
+  type        = string
+  default     = "LOCAL_CUSTOM_CACHE"
+  description = "The type of data caching between builds. The inputs values are LOCAL_SOURCE_CACHE, LOCAL_DOCKER_LAYER_CACHE, LOCAL_CUSTOM_CACHE"
 }
 
 variable "aws_account_id" {
@@ -185,14 +181,3 @@ variable "create_resources" {
   description = "whether to create the IAM resources"
 }
 
-variable "cache_type" {
-  type        = string
-  default     = "NO_CACHE"
-  description = "The type of storage that will be used for the AWS CodeBuild project cache. Valid values: NO_CACHE, LOCAL, and S3.  Defaults to NO_CACHE.  If cache_type is S3, the name of the S3 bucket will need to be provided"
-}
-
-variable "local_caches_modes" {
-  type        = string
-  default     = "LOCAL_CUSTOM_CACHE"
-  description = "The type of data caching between builds. The inputs values are LOCAL_SOURCE_CACHE, LOCAL_DOCKER_LAYER_CACHE, LOCAL_CUSTOM_CACHE"
-}

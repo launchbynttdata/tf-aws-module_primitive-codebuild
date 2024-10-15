@@ -1,6 +1,6 @@
 project_name = "codebuild_osahon"
 
-region = "us-east-2"
+aws_region = "us-east-2"
 
 namespace = "eg"
 
@@ -16,8 +16,13 @@ source_location = "https://github.com/debasish-sahoo-nttd/sample-dotnetcore-app.
 
 buildspec = "buildspec.yml"
 
+s3_cache_bucket_name = "osahon-test-020127659860"
 
-cache_bucket_suffix_enabled = true
+local_caches_modes = "LOCAL_CUSTOM_CACHE"
+
+cache_type = "S3"
+
+
 
 environment_variables = [
   {
@@ -59,8 +64,6 @@ environment_variables = [
 ]
 
 cache_expiration_days = 7
-
-cache_type = "S3"
 
 artifacts = [{
   artifact_identifier    = "primary-artifacts"

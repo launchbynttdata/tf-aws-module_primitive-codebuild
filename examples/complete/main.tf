@@ -1,6 +1,10 @@
+data "aws_caller_identity" "default" {}
+
+
+
 # Optional: Lookup existing S3 bucket by name
 data "aws_s3_bucket" "artifact_bucket" {
-  bucket = var.artifacts.location # Fetch information about the existing S3 bucket
+  bucket = var.s3_cache_bucket_name # Fetch information about the existing S3 bucket
 }
 
 # Create the IAM role for CodeBuild
@@ -41,7 +45,7 @@ data "aws_iam_policy_document" "codebuild_policy" {
       "${data.aws_s3_bucket.artifact_bucket.arn}/*", # S3 bucket objects for artifacts
       data.aws_s3_bucket.artifact_bucket.arn,        # Use for cache as well
       "${data.aws_s3_bucket.artifact_bucket.arn}/*", # S3 bucket objects for cache
-      "arn:aws:logs:${var.region}:${data.aws_caller_identity.default.account_id}:log-group:/aws/codebuild/${var.project_name}*"
+      "arn:aws:logs:${var.aws_region}:${data.aws_caller_identity.default.account_id}:log-group:/aws/codebuild/${var.project_name}*"
     ]
     effect = "Allow"
   }
@@ -54,26 +58,17 @@ resource "aws_iam_role_policy" "codebuild_policy" {
   policy = data.aws_iam_policy_document.codebuild_policy.json
 }
 
-# # Pass the IAM role ARN to the CodeBuild project
-# module "codebuild_project" {
-#   source              = "../root-module-path"
-#   project_name        = var.project_name
-#   iam_role_arn        = aws_iam_role.codebuild_role.arn  # Pass the created IAM role ARN
-#   cache_bucket_name   = data.aws_s3_bucket.artifact_bucket.bucket  # Use dynamically fetched bucket name
-#   artifact_location   = data.aws_s3_bucket.artifact_bucket.bucket  # Use dynamically fetched bucket name
-# }
-
 
 module "codebuild" {
   source                      = "../.."
   project_name                = var.project_name
   description                 = "This is my awesome Codebuild project"
   concurrent_build_limit      = 1
-  cache_bucket_suffix_enabled = var.cache_bucket_suffix_enabled
+  #cache_bucket_suffix_enabled = var.cache_bucket_suffix_enabled
   environment_variables       = var.environment_variables
   cache_expiration_days       = var.cache_expiration_days
   cache_type                  = var.cache_type
-  aws_region                  = var.region
+  aws_region                  = var.aws_region
   source_location             = var.source_location
   source_type                 = var.source_type
   buildspec                   = var.buildspec
@@ -89,7 +84,6 @@ module "codebuild" {
   create_resources              = var.create_resources
   service_role_arn              = aws_iam_role.codebuild_role.arn
   s3_cache_bucket_name          = var.s3_cache_bucket_name
-  local_caches_modes            = var.local_cache_modes
-
+  local_caches_modes            = var.local_caches_modes
 }
 
