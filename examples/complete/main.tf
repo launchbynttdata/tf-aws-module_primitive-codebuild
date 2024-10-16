@@ -4,7 +4,7 @@ data "aws_caller_identity" "default" {}
 
 # Optional: Lookup existing S3 bucket by name
 data "aws_s3_bucket" "artifact_bucket" {
-  bucket = var.s3_cache_bucket_name # Fetch information about the existing S3 bucket
+  bucket = var.bucket_name # Fetch information about the existing S3 bucket
 }
 
 # Create the IAM role for CodeBuild
@@ -58,23 +58,52 @@ resource "aws_iam_role_policy" "codebuild_policy" {
   policy = data.aws_iam_policy_document.codebuild_policy.json
 }
 
+module "s3_bucket" {
+  source = "github.com/launchbynttdata/tf-aws-module_collection-s3_bucket.git?ref=1.0.0"
+
+
+  logical_product_family  = var.logical_product_family
+  logical_product_service = var.logical_product_service
+  region                  = var.aws_region
+  class_env               = var.class_env
+
+  block_public_acls       = var.block_public_acls
+  block_public_policy     = var.block_public_policy
+  restrict_public_buckets = var.restrict_public_buckets
+  ignore_public_acls      = var.ignore_public_acls
+
+  kms_s3_key_arn                     = aws_kms_key.kms_key.arn
+  kms_s3_key_sse_algorithm           = var.kms_s3_key_sse_algorithm
+  bucket_key_enabled                 = var.bucket_key_enabled
+  use_default_server_side_encryption = var.use_default_server_side_encryption
+
+  enable_versioning        = var.enable_versioning
+  policy                   = var.policy
+  lifecycle_rule           = var.lifecycle_rule
+  metric_configuration     = var.metric_configuration
+  analytics_configuration  = var.analytics_configuration
+  bucket_name              = local.cache_bucket_name
+  tags                     = local.tags
+  object_ownership         = var.object_ownership
+  control_object_ownership = var.control_object_ownership
+  acl                      = var.acl
+}
+
 
 module "codebuild" {
-  source                      = "../.."
-  project_name                = var.project_name
-  description                 = "This is my awesome Codebuild project"
-  concurrent_build_limit      = 1
+  source = "../.."
+  # project_name           = var.project_name
+  description            = "This is my awesome Codebuild project"
+  concurrent_build_limit = 1
   #cache_bucket_suffix_enabled = var.cache_bucket_suffix_enabled
-  environment_variables       = var.environment_variables
-  cache_expiration_days       = var.cache_expiration_days
-  cache_type                  = var.cache_type
-  aws_region                  = var.aws_region
-  source_location             = var.source_location
-  source_type                 = var.source_type
-  buildspec                   = var.buildspec
-  artifact_type               = "NO_ARTIFACTS"
-
-  context = module.this.context
+  environment_variables = var.environment_variables
+  cache_expiration_days = var.cache_expiration_days
+  cache_type            = var.cache_type
+  aws_region            = var.aws_region
+  source_location       = var.source_location
+  source_type           = var.source_type
+  buildspec             = var.buildspec
+  artifact_type         = "NO_ARTIFACTS"
 
   artifacts                     = var.artifacts
   secondary_artifacts           = var.secondary_artifacts
@@ -83,7 +112,7 @@ module "codebuild" {
   source_credential_user_name   = ""
   create_resources              = var.create_resources
   service_role_arn              = aws_iam_role.codebuild_role.arn
-  s3_cache_bucket_name          = var.s3_cache_bucket_name
-  local_caches_modes            = var.local_caches_modes
+  s3_cache_bucket_name          = module.s3_bucket.arn
+  caches_modes                  = var.caches_modes
 }
 

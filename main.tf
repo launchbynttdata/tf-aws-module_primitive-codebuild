@@ -2,7 +2,7 @@ data "aws_caller_identity" "default" {}
 
 
 resource "random_string" "bucket_prefix" {
-  count   = module.this.enabled ? 1 : 0
+  count   = var.codebuild_enabled ? 1 : 0
   length  = 12
   numeric = false
   upper   = false
@@ -10,9 +10,25 @@ resource "random_string" "bucket_prefix" {
   lower   = true
 }
 
+module "resource_names" {
+  source  = "terraform.registry.launch.nttdata.com/module_library/resource_name/launch"
+  version = "~> 1.0"
+
+  for_each = var.resource_names_map
+
+  logical_product_family  = var.logical_product_family
+  logical_product_service = var.logical_product_service
+  region                  = join("", split("-", var.region))
+  class_env               = var.class_env
+  cloud_resource_type     = each.value.name
+  instance_env            = var.instance_env
+  instance_resource       = var.instance_resource
+  maximum_length          = each.value.max_length
+}
+
 resource "aws_codebuild_project" "default" {
-  count                  = module.this.enabled ? 1 : 0
-  name                   = var.project_name
+  count                  = var.codebuild_enabled ? 1 : 0
+  name                   = replace(module.resource_names["codebuild"].standard, local.labels)
   description            = var.description
   concurrent_build_limit = var.concurrent_build_limit
   service_role           = var.service_role_arn
@@ -22,11 +38,9 @@ resource "aws_codebuild_project" "default" {
   encryption_key         = var.encryption_key
 
 
-  tags = {
-    for name, value in module.this.tags :
-    name => value
-    if length(value) > 0
-  }
+  tags = merge(locals.labels_as_tags, local.tags_context)
+  
+
   artifacts {
     type                   = var.artifacts[0].type
     location               = var.artifacts[0].location
@@ -75,7 +89,7 @@ resource "aws_codebuild_project" "default" {
   cache {
     type     = var.cache_type
     location = var.s3_cache_bucket_name
-    modes = [var.local_caches_modes]
+    modes = [var.caches_modes]
   }
 
   environment {

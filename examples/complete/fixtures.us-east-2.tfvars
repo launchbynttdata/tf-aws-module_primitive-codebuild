@@ -22,6 +22,8 @@ local_caches_modes = "LOCAL_CUSTOM_CACHE"
 
 cache_type = "S3"
 
+environment = "sandbox"
+
 
 
 environment_variables = [

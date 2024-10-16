@@ -33,3 +33,7 @@ output "badge_url" {
   value       = module.codebuild.badge_url
 }
 
+output "s3_bucket" {
+  description = "the arn of the S3 bucket used for caching and or artifact"
+  value = module.s3_bucket.arn
+}

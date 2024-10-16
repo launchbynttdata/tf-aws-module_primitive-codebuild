@@ -3,6 +3,138 @@ variable "aws_region" {
   description = "AWS region"
 }
 
+variable "logical_product_service" {
+  type        = string
+  description = <<EOF
+    (Required) Name of the product service for which the resource is created.
+    For example, backend, frontend, middleware etc.
+  EOF
+  nullable    = false
+
+  validation {
+    condition     = can(regex("^[_\\-A-Za-z0-9]+$", var.logical_product_service))
+    error_message = "The variable must contain letters, numbers, -, _, and .."
+  }
+
+  default = "servicename"
+}
+
+variable "environment" {
+  description = "Environment in which the resource should be provisioned like dev, qa, prod etc."
+  type        = string
+  default     = "dev"
+}
+
+variable "class_env" {
+  type        = string
+  default     = "dev"
+  description = "(Required) Environment where resource is going to be deployed. For example. dev, qa, uat"
+  nullable    = false
+
+  validation {
+    condition     = length(regexall("\\b \\b", var.class_env)) == 0
+    error_message = "Spaces between the words are not allowed."
+  }
+}
+
+variable "block_public_acls" {
+  description = "Whether Amazon S3 should block public ACLs for this bucket."
+  type        = bool
+  default     = true
+}
+
+variable "block_public_policy" {
+  description = "Whether Amazon S3 should block public bucket policies for this bucket."
+  type        = bool
+  default     = true
+}
+
+variable "ignore_public_acls" {
+  description = "Whether Amazon S3 should ignore public ACLs for this bucket."
+  type        = bool
+  default     = true
+}
+
+variable "restrict_public_buckets" {
+  description = "Whether Amazon S3 should restrict public bucket policies for this bucket."
+  type        = bool
+  default     = true
+}
+
+variable "use_default_server_side_encryption" {
+  description = "Flag to indiate if default server side encryption should be used. SSE-KMS encryption is used if the flag value is set to false(which is default). If flag value is set to true then default server side encryption(encryption set by AWS for all S3 objects)"
+  type        = bool
+  default     = false
+}
+
+variable "kms_s3_key_sse_algorithm" {
+  description = "Server-side encryption algorithm to use. Valid values are AES256 and aws:kms"
+  type        = string
+  default     = "aws:kms"
+}
+
+variable "bucket_key_enabled" {
+  description = "Whether to enable bucket_key for encryption. It reduces encryption costs. Default is false"
+  type        = bool
+  default     = false
+}
+
+variable "enable_versioning" {
+  description = "Whether to enable versioning for this S3 bucket. Default is false"
+  type        = bool
+  default     = false
+}
+
+variable "lifecycle_rule" {
+  description = "List of maps containing configuration of object lifecycle management."
+  type        = any
+  default     = []
+}
+
+variable "metric_configuration" {
+  description = "Map containing bucket metric configuration."
+  type        = any
+  default     = []
+}
+
+variable "analytics_configuration" {
+  description = "Map containing bucket analytics configuration."
+  type        = any
+  default     = {}
+}
+
+variable "object_ownership" {
+  description = "Object ownership. Valid values: BucketOwnerEnforced, BucketOwnerPreferred or ObjectWriter. 'BucketOwnerEnforced': ACLs are disabled, and the bucket owner automatically owns and has full control over every object in the bucket. 'BucketOwnerPreferred': Objects uploaded to the bucket change ownership to the bucket owner if the objects are uploaded with the bucket-owner-full-control canned ACL. 'ObjectWriter': The uploading account will own the object if the object is uploaded with the bucket-owner-full-control canned ACL."
+  type        = string
+  default     = "BucketOwnerEnforced"
+}
+variable "control_object_ownership" {
+  description = "Whether to manage S3 Bucket Ownership Controls on this bucket."
+  type        = bool
+  default     = false
+}
+
+variable "acl" {
+  description = "The canned ACL to apply. Defaults to private."
+  type        = string
+  default     = null
+}
+
+variable "tags" {
+  type        = map(string)
+  default     = {}
+  description = <<-EOT
+    Additional tags (e.g. `{'BusinessUnit': 'XYZ'}`).
+    Neither the tag keys nor the tag values will be modified by this module.
+    EOT
+}
+
+variable "cache_bucket_suffix_enabled" {
+  type        = bool
+  default     = true
+  description = "The cache bucket generates a random 13 character string to generate a unique bucket name. If set to false it uses terraform-null-label's id value. It only works when cache_type is 'S3"
+}
+
 variable "environment_variables" {
   type = list(object(
     {
@@ -30,6 +162,13 @@ variable "cache_type" {
   type        = string
   description = "The type of storage that will be used for the AWS CodeBuild project cache. Valid values: NO_CACHE, LOCAL, and S3.  Defaults to NO_CACHE.  If cache_type is S3, it will create an S3 bucket for storing codebuild cache inside"
 }
+
+variable "caches_modes" {
+  type        = string
+  default     = "LOCAL_CUSTOM_CACHE"
+  description = "The type of data caching between builds. The inputs values are LOCAL_SOURCE_CACHE, LOCAL_DOCKER_LAYER_CACHE, LOCAL_CUSTOM_CACHE"
+}
+
 variable "project_name" {
   type = string
 }
@@ -98,11 +237,6 @@ variable "source_credential_user_name" {
   description = "The Bitbucket username when the authType is BASIC_AUTH. This parameter is not valid for other types of source providers or connections."
 }
 
-variable "service_role_arn" {
-  type        = string
-  description = "The ARN of the IAM role for Codebuild. This is to be provided by the user"
-}
-
 variable "cache_enabled" {
   type        = bool
   description = "Flag to enable or disable the module"
@@ -140,13 +274,13 @@ variable "iam_policy_path" {
   description = "Path to the policy."
 }
 
-variable "s3_cache_bucket_name" {
+variable "bucket_name" {
   type        = string
   default     = null
-  description = "Use an existing s3 bucket name for cache. Relevant if `cache_type` is set to `S3`."
+  description = "Relevant if `cache_type` is set to `S3`."
 }
 
-variable "local_caches_modes" {
+variable "caches_modes" {
   type        = string
   default     = "LOCAL_CUSTOM_CACHE"
   description = "The type of data caching between builds. The inputs values are LOCAL_SOURCE_CACHE, LOCAL_DOCKER_LAYER_CACHE, LOCAL_CUSTOM_CACHE"
