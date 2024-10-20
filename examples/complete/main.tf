@@ -1,10 +1,10 @@
 data "aws_caller_identity" "default" {}
 
 
-
 # Optional: Lookup existing S3 bucket by name
 data "aws_s3_bucket" "artifact_bucket" {
-  bucket = var.bucket_name # Fetch information about the existing S3 bucket
+  bucket = local.cache_bucket_name # Fetch information about the existing S3 bucket
+  depends_on = [ module.s3_bucket ]
 }
 
 # Create the IAM role for CodeBuild
@@ -41,10 +41,8 @@ data "aws_iam_policy_document" "codebuild_policy" {
       "codebuild:BatchGetProjects"
     ]
     resources = [
-      data.aws_s3_bucket.artifact_bucket.arn,        # Use dynamically fetched ARN
-      "${data.aws_s3_bucket.artifact_bucket.arn}/*", # S3 bucket objects for artifacts
-      data.aws_s3_bucket.artifact_bucket.arn,        # Use for cache as well
-      "${data.aws_s3_bucket.artifact_bucket.arn}/*", # S3 bucket objects for cache
+      module.s3_bucket.arn,
+      "${module.s3_bucket.arn}/*",
       "arn:aws:logs:${var.aws_region}:${data.aws_caller_identity.default.account_id}:log-group:/aws/codebuild/${var.project_name}*"
     ]
     effect = "Allow"
@@ -78,24 +76,27 @@ module "s3_bucket" {
   use_default_server_side_encryption = var.use_default_server_side_encryption
 
   enable_versioning        = var.enable_versioning
-  policy                   = var.policy
   lifecycle_rule           = var.lifecycle_rule
   metric_configuration     = var.metric_configuration
   analytics_configuration  = var.analytics_configuration
   bucket_name              = local.cache_bucket_name
-  tags                     = local.tags
+  tags                     = var.tags
   object_ownership         = var.object_ownership
   control_object_ownership = var.control_object_ownership
   acl                      = var.acl
 }
 
+# AWS KMS Key Resource
+resource "aws_kms_key" "kms_key" {
+  description             = var.kms_key_description
+  deletion_window_in_days = var.kms_key_deletion_window_in_days
+  enable_key_rotation     = true
+}
 
 module "codebuild" {
   source = "../.."
-  # project_name           = var.project_name
   description            = "This is my awesome Codebuild project"
   concurrent_build_limit = 1
-  #cache_bucket_suffix_enabled = var.cache_bucket_suffix_enabled
   environment_variables = var.environment_variables
   cache_expiration_days = var.cache_expiration_days
   cache_type            = var.cache_type
@@ -116,3 +117,11 @@ module "codebuild" {
   caches_modes                  = var.caches_modes
 }
 
+resource "random_string" "bucket_prefix" {
+  count   = var.codebuild_enabled ? 1 : 0
+  length  = 12
+  numeric = false
+  upper   = false
+  special = false
+  lower   = true
+}

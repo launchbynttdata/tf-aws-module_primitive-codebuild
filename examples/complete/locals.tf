@@ -13,14 +13,11 @@ locals {
   s3_cache_enabled       = var.cache_type == "S3"
   create_s3_cache_bucket = local.s3_cache_enabled && var.bucket_name == null
 
-  # Set the bucket name based on whether it's dynamically created or provided
-  s3_bucket_name = local.create_s3_cache_bucket ? aws_s3_bucket.cache_bucket[0].bucket : var.bucket_name
-
   # Cache options for the CodeBuild project
   cache_options = {
     "S3" = {
       type     = "S3"
-      location = local.s3_cache_enabled ? local.s3_bucket_name : "none"
+      location = local.s3_cache_enabled ? local.create_s3_cache_bucket : "none"
     },
     "LOCAL" = {
       type  = "LOCAL"

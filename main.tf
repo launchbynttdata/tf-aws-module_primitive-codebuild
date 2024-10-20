@@ -18,7 +18,7 @@ module "resource_names" {
 
   logical_product_family  = var.logical_product_family
   logical_product_service = var.logical_product_service
-  region                  = join("", split("-", var.region))
+  region                  = join("", split("-", var.aws_region))
   class_env               = var.class_env
   cloud_resource_type     = each.value.name
   instance_env            = var.instance_env
@@ -28,7 +28,7 @@ module "resource_names" {
 
 resource "aws_codebuild_project" "default" {
   count                  = var.codebuild_enabled ? 1 : 0
-  name                   = replace(module.resource_names["codebuild"].standard, local.labels)
+  name                   = var.project_name
   description            = var.description
   concurrent_build_limit = var.concurrent_build_limit
   service_role           = var.service_role_arn
@@ -38,7 +38,7 @@ resource "aws_codebuild_project" "default" {
   encryption_key         = var.encryption_key
 
 
-  tags = merge(locals.labels_as_tags, local.tags_context)
+  tags = merge(local.tags_context, var.tags)
   
 
   artifacts {

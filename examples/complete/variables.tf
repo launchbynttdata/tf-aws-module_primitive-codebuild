@@ -3,6 +3,22 @@ variable "aws_region" {
   description = "AWS region"
 }
 
+variable "logical_product_family" {
+  type        = string
+  description = <<EOF
+    (Required) Name of the product family for which the resource is created.
+    Example: org_name, department_name.
+  EOF
+  nullable    = false
+
+  validation {
+    condition     = can(regex("^[_\\-A-Za-z0-9]+$", var.logical_product_family))
+    error_message = "The variable must contain letters, numbers, -, _, and .."
+  }
+
+  default = "launch"
+}
+
 variable "logical_product_service" {
   type        = string
   description = <<EOF
@@ -17,12 +33,6 @@ variable "logical_product_service" {
   }
 
   default = "servicename"
-}
-
-variable "environment" {
-  description = "Environment in which the resource should be provisioned like dev, qa, prod etc."
-  type        = string
-  default     = "dev"
 }
 
 variable "class_env" {
@@ -79,6 +89,18 @@ variable "bucket_key_enabled" {
   default     = false
 }
 
+variable "kms_key_description" {
+  description = "KMS key description. This KMS key is used for SSE-KMS encryption f source bucket."
+  type        = string
+  default     = "KMS key used for source bucket encryption"
+}
+
+variable "kms_key_deletion_window_in_days" {
+  description = "(Optional) The waiting period, specified in number of days. After the waiting period ends, AWS KMS deletes the KMS key. If you specify a value, it must be between 7 and 30, inclusive. If you do not specify a value, it defaults to 30. If the KMS key is a multi-Region primary key with replicas, the waiting period begins when the last of its replica keys is deleted. Otherwise, the waiting period begins immediately."
+  type        = number
+  default     = 30
+}
+
 variable "enable_versioning" {
   description = "Whether to enable versioning for this S3 bucket. Default is false"
   type        = bool
@@ -120,14 +142,14 @@ variable "acl" {
   default     = null
 }
 
-variable "tags" {
-  type        = map(string)
-  default     = {}
-  description = <<-EOT
-    Additional tags (e.g. `{'BusinessUnit': 'XYZ'}`).
-    Neither the tag keys nor the tag values will be modified by this module.
-    EOT
-}
+# variable "tags" {
+#   type        = map(string)
+#   default     = {}
+#   description = <<-EOT
+#     Additional tags (e.g. `{'BusinessUnit': 'XYZ'}`).
+#     Neither the tag keys nor the tag values will be modified by this module.
+#     EOT
+# }
 
 variable "cache_bucket_suffix_enabled" {
   type        = bool
@@ -163,12 +185,6 @@ variable "cache_type" {
   description = "The type of storage that will be used for the AWS CodeBuild project cache. Valid values: NO_CACHE, LOCAL, and S3.  Defaults to NO_CACHE.  If cache_type is S3, it will create an S3 bucket for storing codebuild cache inside"
 }
 
-variable "caches_modes" {
-  type        = string
-  default     = "LOCAL_CUSTOM_CACHE"
-  description = "The type of data caching between builds. The inputs values are LOCAL_SOURCE_CACHE, LOCAL_DOCKER_LAYER_CACHE, LOCAL_CUSTOM_CACHE"
-}
-
 variable "project_name" {
   type = string
 }
@@ -187,6 +203,12 @@ variable "buildspec" {
   description = "Path to the buildspec.yml file"
   type        = string
   default     = "buildspec.yml"
+}
+
+variable "codebuild_enabled" {
+  type        = bool
+  description = "Flag to enable or disable the module"
+  default     = true
 }
 
 variable "artifacts" {

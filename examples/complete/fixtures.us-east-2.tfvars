@@ -1,4 +1,4 @@
-project_name = "codebuild_osahon"
+project_name = "codebuild-osahon"
 
 aws_region = "us-east-2"
 
@@ -16,13 +16,11 @@ source_location = "https://github.com/debasish-sahoo-nttd/sample-dotnetcore-app.
 
 buildspec = "buildspec.yml"
 
-s3_cache_bucket_name = "osahon-test-020127659860"
-
-local_caches_modes = "LOCAL_CUSTOM_CACHE"
-
 cache_type = "S3"
 
 environment = "sandbox"
+
+tags = {}
 
 
 

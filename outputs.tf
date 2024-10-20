@@ -43,9 +43,9 @@ output "buildspec" {
   value       = var.buildspec
 }
 
-output "codebuild_project_arn" {
-  value = module.this.enabled ? aws_codebuild_project.default[0].arn : null
-}
+# output "codebuild_project_arn" {
+#   value = module.this.enabled ? aws_codebuild_project.default[0].arn : null
+# }
 
 # output "iam_role_arn" {
 #   value = module.this.enabled ? aws_iam_role.default[0].arn : null
