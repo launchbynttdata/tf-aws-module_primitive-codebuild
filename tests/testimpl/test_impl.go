@@ -1,4 +1,4 @@
-package common
+package testimpl
 
 import (
 	"context"
@@ -84,4 +84,3 @@ func TestS3BucketAndIAMRole(t *testing.T, ctx types.TestContext) {
 	// Verify that the IAM role exists
 	VerifyIAMRoleExists(t, ctx, iamRoleName)
 }
-
