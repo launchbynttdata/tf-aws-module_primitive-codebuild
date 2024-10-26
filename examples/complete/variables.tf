@@ -142,14 +142,14 @@ variable "acl" {
   default     = null
 }
 
-# variable "tags" {
-#   type        = map(string)
-#   default     = {}
-#   description = <<-EOT
-#     Additional tags (e.g. `{'BusinessUnit': 'XYZ'}`).
-#     Neither the tag keys nor the tag values will be modified by this module.
-#     EOT
-# }
+variable "tags" {
+  type        = map(string)
+  default     = {}
+  description = <<-EOT
+    Additional tags (e.g. `{'BusinessUnit': 'XYZ'}`).
+    Neither the tag keys nor the tag values will be modified by this module.
+    EOT
+}
 
 variable "cache_bucket_suffix_enabled" {
   type        = bool

@@ -2,13 +2,7 @@ project_name = "codebuild-osahon"
 
 aws_region = "us-east-2"
 
-namespace = "eg"
-
 create_resources = true
-
-stage = "test"
-
-name = "codebuild-test"
 
 source_type = "GITHUB"
 
@@ -17,8 +11,6 @@ source_location = "https://github.com/debasish-sahoo-nttd/sample-dotnetcore-app.
 buildspec = "buildspec.yml"
 
 cache_type = "S3"
-
-environment = "sandbox"
 
 tags = {}
 
