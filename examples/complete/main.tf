@@ -1,5 +1,3 @@
-data "aws_caller_identity" "default" {}
-
 
 # Optional: Lookup existing S3 bucket by name
 data "aws_s3_bucket" "artifact_bucket" {
