@@ -12,8 +12,6 @@ buildspec = "buildspec.yml"
 
 cache_type = "S3"
 
-cache_expiration_days = 7
-
 tags = {}
 
 
