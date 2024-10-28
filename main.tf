@@ -10,22 +10,6 @@ resource "random_string" "bucket_prefix" {
   lower   = true
 }
 
-# module "resource_names" {
-#   source  = "terraform.registry.launch.nttdata.com/module_library/resource_name/launch"
-#   version = "~> 1.0"
-
-#   for_each = var.resource_names_map
-
-#   logical_product_family  = var.logical_product_family
-#   logical_product_service = var.logical_product_service
-#   region                  = join("", split("-", var.aws_region))
-#   class_env               = var.class_env
-#   cloud_resource_type     = each.value.name
-#   instance_env            = var.instance_env
-#   instance_resource       = var.instance_resource
-#   maximum_length          = each.value.max_length
-# }
-
 resource "aws_codebuild_project" "default" {
   count                  = var.codebuild_enabled ? 1 : 0
   name                   = var.project_name
@@ -89,7 +73,7 @@ resource "aws_codebuild_project" "default" {
   cache {
     type     = var.cache_type
     location = var.s3_cache_bucket_name
-    modes = [var.caches_modes]
+    modes    = [var.caches_modes]
   }
 
   environment {

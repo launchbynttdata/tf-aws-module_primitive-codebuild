@@ -3,8 +3,8 @@ data "aws_caller_identity" "default" {}
 
 # Optional: Lookup existing S3 bucket by name
 data "aws_s3_bucket" "artifact_bucket" {
-  bucket = local.cache_bucket_name # Fetch information about the existing S3 bucket
-  depends_on = [ module.s3_bucket ]
+  bucket     = local.cache_bucket_name # Fetch information about the existing S3 bucket
+  depends_on = [module.s3_bucket]
 }
 
 # Create the IAM role for CodeBuild
@@ -94,17 +94,17 @@ resource "aws_kms_key" "kms_key" {
 }
 
 module "codebuild" {
-  source = "../.."
+  source                 = "../.."
   description            = "This is my awesome Codebuild project"
   concurrent_build_limit = 1
-  environment_variables = var.environment_variables
-  cache_expiration_days = var.cache_expiration_days
-  cache_type            = var.cache_type
-  aws_region            = var.aws_region
-  source_location       = var.source_location
-  source_type           = var.source_type
-  buildspec             = var.buildspec
-  artifact_type         = "NO_ARTIFACTS"
+  environment_variables  = var.environment_variables
+  cache_expiration_days  = var.cache_expiration_days
+  cache_type             = var.cache_type
+  aws_region             = var.aws_region
+  source_location        = var.source_location
+  source_type            = var.source_type
+  buildspec              = var.buildspec
+  artifact_type          = "NO_ARTIFACTS"
 
   artifacts                     = var.artifacts
   secondary_artifacts           = var.secondary_artifacts

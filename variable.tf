@@ -33,7 +33,7 @@ variable "resource_names_map" {
     }
   ))
   default = {
-    
+
     function = {
       name       = "fn"
       max_length = 63
@@ -356,7 +356,7 @@ variable "codebuild_iam" {
 variable "project_name" {
   type        = string
   description = "Name of the codebuild project."
-  default = "codebuild"
+  default     = "codebuild"
 }
 
 variable "enable_github_authentication" {

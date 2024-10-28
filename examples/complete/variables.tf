@@ -333,7 +333,6 @@ variable "extra_permissions" {
 }
 
 variable "create_resources" {
-  type = bool
+  type        = bool
   description = "whether to create the IAM resources"
 }
-

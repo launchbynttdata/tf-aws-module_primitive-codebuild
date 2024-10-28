@@ -14,7 +14,5 @@ locals {
   default_tags = {
     provisioner = "Terraform"
   }
-  
+
 }
-
-

@@ -1,24 +1,28 @@
 package test
 
 import (
-	"testing"
+    "testing"
 
-	"github.com/launchbynttdata/lcaf-component-terratest/lib"
-	"github.com/launchbynttdata/lcaf-component-terratest/types"
-	testimpl "github.com/launchbynttdata/terraform-aws-codebuild/tests/testimpl"
+    "github.com/launchbynttdata/lcaf-component-terratest/lib"
+    "github.com/launchbynttdata/lcaf-component-terratest/types"
+    "github.com/launchbynttdata/terraform-aws-codebuild/tests/testimpl"
 )
 
 const (
-	testConfigsExamplesFolderDefault = "../../examples"
-	infraTFVarFileNameDefault        = "test.tfvars"
+    testConfigsExamplesFolderDefault = "../../examples"
+    infraTFVarFileNameDefault        = "test.tfvars"
 )
 
-func TestAutoscalingPolicyModule(t *testing.T) {
-	ctx := types.CreateTestContextBuilder().
-		SetTestConfig(&testimpl.ThisTFModuleConfig{}).
-		SetTestConfigFolderName(testConfigsExamplesFolderDefault).
-		SetTestConfigFileName(infraTFVarFileNameDefault).
-		Build()
+// TestS3BucketAndIAMRoleModule is the post-deploy functional test for the S3 bucket and IAM role
+func TestS3BucketAndIAMRoleModule(t *testing.T) {
 
-	lib.RunNonDestructiveTest(t, *ctx, testimpl.TestAutoscalingPolicy)
+    // Setup the Terratest context
+    ctx := types.CreateTestContextBuilder().
+        SetTestConfig(&testimpl.ThisTFModuleConfig{}).
+        SetTestConfigFolderName(testConfigsExamplesFolderDefault).
+        SetTestConfigFileName(infraTFVarFileNameDefault).
+        Build()
+
+    // Run setup, test, teardown steps using Terratest framework
+    lib.RunSetupTestTeardown(t, *ctx, testimpl.TestS3BucketAndIAMRole)
 }
