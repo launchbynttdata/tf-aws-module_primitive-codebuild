@@ -8,9 +8,9 @@ output "project_id" {
   value       = module.codebuild.project_id
 }
 
-output "role_id" {
+output "service_role_arn" {
   description = "IAM Role ID"
-  value       = aws_iam_role.codebuild_role.id
+  value       = module.codebuild.service_role_arn
 }
 
 output "badge_url" {
@@ -20,5 +20,5 @@ output "badge_url" {
 
 output "s3_bucket" {
   description = "the arn of the S3 bucket used for caching and or artifact"
-  value       = module.s3_bucket.arn
+  value       = module.codebuild.s3_bucket_arn
 }
