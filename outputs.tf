@@ -1,24 +1,34 @@
 output "project_name" {
   description = "Project name"
-  value       = aws_codebuild_project.default[0].name
+  value       = aws_codebuild_project.default.name
 }
 
 output "project_id" {
   description = "Project ID"
-  value       = aws_codebuild_project.default[0].id
+  value       = aws_codebuild_project.default.id
 }
 
 output "badge_url" {
   description = "The URL of the build badge when badge_enabled is enabled"
-  value       = aws_codebuild_project.default[0].badge_url
+  value       = aws_codebuild_project.default.badge_url
 }
 
 output "project_arn" {
   description = "Project ARN"
-  value       = aws_codebuild_project.default[0].arn
+  value       = aws_codebuild_project.default.arn
 }
 
 output "buildspec" {
   description = "The buildspec used with the CodeBuild project"
   value       = var.buildspec
+}
+
+output "s3_bucket_arn" {
+  description = "The arn of s3 bucket created for artifact and or caching"
+  value = module.s3_bucket.arn
+}
+
+output "service_role_arn" {
+  description = "The arn of the service role created for the codebuild project"
+  value = aws_iam_role.codebuild_role.arn
 }
