@@ -68,7 +68,6 @@ locals {
     labels_as_tags     = local.context_labels_as_tags_is_unset ? var.labels_as_tags : var.context.labels_as_tags
   }
 
-  enabled             = local.input.enabled
   regex_replace_chars = coalesce(local.input.regex_replace_chars, local.defaults.regex_replace_chars)
 
   # string_label_names are names of inputs that are strings (not list of strings) used as labels
@@ -103,13 +102,6 @@ locals {
 
   # labels_as_tags is an exception to the rule that input vars override context values (see above)
   labels_as_tags = contains(local.input.labels_as_tags, "default") ? local.default_labels_as_tags : local.input.labels_as_tags
-
-  # Just for standardization and completeness
-  descriptor_formats = local.input.descriptor_formats
-
-  additional_tag_map = merge(var.context.additional_tag_map, var.additional_tag_map)
-
-  tags = merge(local.generated_tags, local.input.tags)
 
   tags_context = {
     namespace   = local.namespace
@@ -158,20 +150,5 @@ locals {
   # Determine if the cache type is S3 and if the bucket should be created
   s3_cache_enabled       = var.cache_type == "S3"
   create_s3_cache_bucket = local.s3_cache_enabled && var.bucket_name == null
-
-  # Cache options for the CodeBuild project
-  cache_options = {
-    "S3" = {
-      type     = "S3"
-      location = local.s3_cache_enabled ? local.create_s3_cache_bucket : "none"
-    },
-    "LOCAL" = {
-      type  = "LOCAL"
-      modes = var.caches_modes
-    },
-    "NO_CACHE" = {
-      type = "NO_CACHE"
-    }
-  }
 
 }
