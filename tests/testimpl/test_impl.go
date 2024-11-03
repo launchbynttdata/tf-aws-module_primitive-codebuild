@@ -68,7 +68,7 @@ func TestS3BucketAndIAMRole(t *testing.T, ctx types.TestContext) {
 
 	s3BucketName := terraform.Output(t, terraformOptions, "s3_bucket_arn")
 
-	iamRoleName := terraform.Output(t, terraformOptions, "role_id")
+	iamRoleName := terraform.Output(t, terraformOptions, "service_role_arn")
 
 	VerifyS3BucketExists(t, ctx, s3BucketName)
 

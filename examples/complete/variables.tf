@@ -31,7 +31,6 @@ variable "logical_product_service" {
     condition     = can(regex("^[_\\-A-Za-z0-9]+$", var.logical_product_service))
     error_message = "The variable must contain letters, numbers, -, _, and .."
   }
-
   default = "servicename"
 }
 
@@ -78,11 +77,6 @@ variable "environment_variables" {
   }]
 
   description = "A list of maps, that contain the keys 'name', 'value', and 'type' to be used as additional environment variables for the build. Valid types are 'PLAINTEXT', 'PARAMETER_STORE', or 'SECRETS_MANAGER'"
-}
-
-variable "cache_expiration_days" {
-  type        = number
-  description = "How many days should the build cache be kept. It only works when cache_type is 'S3'"
 }
 
 variable "cache_type" {
@@ -146,40 +140,10 @@ variable "secondary_artifacts" {
   }))
 }
 
-variable "source_credential_auth_type" {
-  type        = string
-  default     = "PERSONAL_ACCESS_TOKEN"
-  description = "The type of authentication used to connect to a GitHub, GitHub Enterprise, or Bitbucket repository."
-}
-
-variable "source_credential_server_type" {
-  type        = string
-  default     = "GITHUB"
-  description = "The source provider used for this project."
-}
-
-variable "source_credential_user_name" {
-  type        = string
-  default     = ""
-  description = "The Bitbucket username when the authType is BASIC_AUTH. This parameter is not valid for other types of source providers or connections."
-}
-
 variable "cache_enabled" {
   type        = bool
   description = "Flag to enable or disable the module"
   default     = true
-}
-
-variable "iam_role_path" {
-  type        = string
-  default     = null
-  description = "Path to the role."
-}
-
-variable "iam_permissions_boundary" {
-  type        = string
-  default     = null
-  description = "ARN of the policy that is used to set the permissions boundary for the role."
 }
 
 variable "codebuild_iam" {
@@ -193,12 +157,6 @@ variable "vpc_config" {
   type        = any
   default     = {}
   description = "Configuration for the builds to run inside a VPC."
-}
-
-variable "iam_policy_path" {
-  type        = string
-  default     = "/service-role/"
-  description = "Path to the policy."
 }
 
 variable "bucket_name" {
@@ -219,26 +177,8 @@ variable "aws_account_id" {
   description = "(Optional) AWS Account ID. Used as CodeBuild ENV variable when building Docker images. For more info: http://docs.aws.amazon.com/codebuild/latest/userguide/sample-docker.html"
 }
 
-variable "create_ecr_access_policy" {
-  type        = bool
-  description = "Whether to create the ECR access policy"
-  default     = true
-}
-
-variable "secondary_artifact_location" {
-  type        = string
+variable "concurrent_build_limit" {
+  type        = number
   default     = null
-  description = "Location of secondary artifact. Must be an S3 reference"
+  description = "Specify a maximum number of concurrent builds for the project. The value specified must be greater than 0 and less than the account concurrent running builds limit."
 }
-
-variable "extra_permissions" {
-  type        = list(any)
-  default     = []
-  description = "List of action strings which will be added to IAM service account permissions."
-}
-
-variable "create_resources" {
-  type        = bool
-  description = "whether to create the IAM resources"
-}
-

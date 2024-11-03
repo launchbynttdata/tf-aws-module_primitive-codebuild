@@ -1,11 +1,5 @@
 data "aws_caller_identity" "default" {}
 
-# Optional: Lookup existing S3 bucket by name
-data "aws_s3_bucket" "artifact_bucket" {
-  bucket     = local.cache_bucket_name # Fetch information about the existing S3 bucket
-  depends_on = [module.s3_bucket]
-}
-
 # Create the IAM role for CodeBuild
 resource "aws_iam_role" "codebuild_role" {
   name               = "${var.project_name}-codebuild-role"
@@ -57,6 +51,7 @@ resource "aws_iam_role_policy" "codebuild_policy" {
   policy = data.aws_iam_policy_document.codebuild_policy.json
 }
 
+# S3 bucket for Artifact 
 module "s3_bucket" {
   source = "github.com/launchbynttdata/tf-aws-module_collection-s3_bucket.git?ref=1.0.0"
 
@@ -102,8 +97,8 @@ resource "random_string" "bucket_prefix" {
   lower   = true
 }
 
+# Codebuild Project
 resource "aws_codebuild_project" "default" {
-  #count                  = var.codebuild_enabled ? 1 : 0
   name                   = var.project_name
   description            = var.description
   concurrent_build_limit = var.concurrent_build_limit
@@ -114,7 +109,8 @@ resource "aws_codebuild_project" "default" {
   encryption_key         = var.encryption_key
 
   tags = merge(local.tags_context, var.tags)
-
+  
+  # Primary Artifacts
   artifacts {
     type                   = var.artifacts[0].type
     location               = var.artifacts[0].location
@@ -165,7 +161,8 @@ resource "aws_codebuild_project" "default" {
     }
 
   }
-
+ 
+  # Source for Codebuild Project
   source {
     buildspec           = var.buildspec
     type                = var.source_type
@@ -180,7 +177,8 @@ resource "aws_codebuild_project" "default" {
       }
     }
   }
-
+ 
+  #Secondary Sources
   dynamic "secondary_sources" {
     for_each = var.secondary_sources
     content {
@@ -197,7 +195,8 @@ resource "aws_codebuild_project" "default" {
       }
     }
   }
-
+  
+  # VPC 
   dynamic "vpc_config" {
     for_each = (lookup(var.vpc_config, "vpc_id", null) != null && length(lookup(var.vpc_config, "subnets", [])) > 0 && length(lookup(var.vpc_config, "security_group_ids", [])) > 0) ? [1] : []
     content {
@@ -206,7 +205,8 @@ resource "aws_codebuild_project" "default" {
       security_group_ids = lookup(var.vpc_config, "security_group_ids", null)
     }
   }
-
+ 
+  # Cloudwatch for Codebuild Project 
   dynamic "logs_config" {
     for_each = length(var.logs_config) > 0 ? [""] : []
     content {
@@ -241,47 +241,4 @@ resource "aws_codebuild_project" "default" {
     }
   }
 }
-
-# # Pull the github_token from the Secrets Manager
-# data "aws_secretsmanager_secret" "secret" {
-#   count = var.enable_github_authentication ? 1 : 0
-
-#   arn = var.github_token
-# }
-
-# data "aws_secretsmanager_secret_version" "current_secret" {
-#   count = var.enable_github_authentication ? 1 : 0
-
-#   secret_id = data.aws_secretsmanager_secret.secret[0].id
-# }
-
-# # Aunthenticate with Github
-# resource "aws_codebuild_source_credential" "github_authentication" {
-#   count       = var.enable_github_authentication ? 1 : 0
-#   auth_type   = var.source_credential_auth_type
-#   server_type = var.source_credential_server_type
-#   token       = data.aws_secretsmanager_secret_version.current_secret[0].secret_string
-#   user_name   = var.source_credential_user_name
-# }
-
-# # Set up webhook for Github, Bitbucket
-# resource "aws_codebuild_webhook" "webhook" {
-#   count = var.create_webhooks ? 1 : 0
-
-#   project_name = aws_codebuild_project.default[0].name
-#   build_type   = var.webhook_build_type
-#   dynamic "filter_group" {
-#     for_each = length(var.webhook_filters) > 0 ? [1] : []
-#     content {
-#       dynamic "filter" {
-#         for_each = var.webhook_filters
-#         content {
-#           type    = filter.key
-#           pattern = filter.value
-#         }
-#       }
-#     }
-#   }
-# }
-
 

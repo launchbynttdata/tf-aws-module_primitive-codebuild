@@ -68,7 +68,6 @@ locals {
     labels_as_tags     = local.context_labels_as_tags_is_unset ? var.labels_as_tags : var.context.labels_as_tags
   }
 
-
   enabled             = local.input.enabled
   regex_replace_chars = coalesce(local.input.regex_replace_chars, local.defaults.regex_replace_chars)
 
@@ -112,14 +111,6 @@ locals {
 
   tags = merge(local.generated_tags, local.input.tags)
 
-  tags_as_list_of_maps = flatten([
-    for key in keys(local.tags) : merge(
-      {
-        key   = key
-        value = local.tags[key]
-    }, local.additional_tag_map)
-  ])
-
   tags_context = {
     namespace   = local.namespace
     tenant      = local.tenant
@@ -155,9 +146,6 @@ locals {
   id_truncated_length_limit = local.id_length_limit - (local.id_hash_length + local.delimiter_length)
   # Truncate the ID and ensure a single (not double) trailing delimiter
   id_truncated = local.id_truncated_length_limit <= 0 ? "" : "${trimsuffix(substr(local.id_full, 0, local.id_truncated_length_limit), local.delimiter)}${local.delimiter}"
-  # Support usages that disallow numeric characters. Would prefer tr 0-9 q-z but Terraform does not support it.
-  # Probably would have been better to take the hash of only the characters being removed,
-  # so identical removed strings would produce identical hashes, but it is not worth breaking existing IDs for.
   id_hash_plus = "${md5(local.id_full)}qrstuvwxyz"
   id_hash_case = local.label_value_case == "title" ? title(local.id_hash_plus) : local.label_value_case == "upper" ? upper(local.id_hash_plus) : local.label_value_case == "lower" ? lower(local.id_hash_plus) : local.id_hash_plus
   id_hash      = replace(local.id_hash_case, local.regex_replace_chars, local.replacement)
@@ -165,36 +153,7 @@ locals {
   id_short = substr("${local.id_truncated}${local.id_hash}", 0, local.id_length_limit)
   id       = local.id_length_limit != 0 && length(local.id_full) > local.id_length_limit ? local.id_short : local.id_full
 
-
-  # Context of this label to pass to other label modules
-  output_context = {
-    enabled             = local.enabled
-    namespace           = local.namespace
-    tenant              = local.tenant
-    environment         = local.environment
-    stage               = local.stage
-    name                = local.name
-    delimiter           = local.delimiter
-    attributes          = local.attributes
-    tags                = local.tags
-    additional_tag_map  = local.additional_tag_map
-    label_order         = local.label_order
-    regex_replace_chars = local.regex_replace_chars
-    id_length_limit     = local.id_length_limit
-    label_key_case      = local.label_key_case
-    label_value_case    = local.label_value_case
-    labels_as_tags      = local.labels_as_tags
-    descriptor_formats  = local.descriptor_formats
-  }
-
-  cache_bucket_name = "${var.project_name}${var.cache_bucket_suffix_enabled ? "-${join("", random_string.bucket_prefix.*.result)}" : ""}"
-
-  # Normalize the cache bucket name, ensuring it's lowercase and using hyphens
-  cache_bucket_name_normalised = substr(
-    join("-", split("_", lower(local.cache_bucket_name))),
-    0,
-    min(length(local.cache_bucket_name), 63),
-  )
+  cache_bucket_name = "${var.project_name}${var.cache_bucket_suffix_enabled ? "-${join("", [for s in random_string.bucket_prefix : s.result])}" : ""}"
 
   # Determine if the cache type is S3 and if the bucket should be created
   s3_cache_enabled       = var.cache_type == "S3"
@@ -214,8 +173,5 @@ locals {
       type = "NO_CACHE"
     }
   }
-
-  # Final cache settings based on the cache type
-  cache = local.cache_options[var.cache_type]
 
 }

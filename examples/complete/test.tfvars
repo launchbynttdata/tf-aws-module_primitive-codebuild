@@ -2,8 +2,6 @@ project_name = "codebuild-osahon"
 
 aws_region = "us-east-2"
 
-create_resources = true
-
 source_type = "GITHUB"
 
 source_location = "https://github.com/debasish-sahoo-nttd/sample-dotnetcore-app.git"
@@ -14,7 +12,7 @@ cache_type = "S3"
 
 tags = {}
 
-
+concurrent_build_limit = 1
 
 environment_variables = [
   {
@@ -52,10 +50,7 @@ environment_variables = [
     value = "latest"
     type  = "PLAINTEXT"
   }
-
 ]
-
-cache_expiration_days = 7
 
 artifacts = [{
   artifact_identifier    = "primary-artifacts"

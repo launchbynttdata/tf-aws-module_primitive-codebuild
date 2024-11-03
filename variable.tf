@@ -36,11 +36,6 @@ variable "concurrent_build_limit" {
   description = "Specify a maximum number of concurrent builds for the project. The value specified must be greater than 0 and less than the account concurrent running builds limit."
 }
 
-variable "cache_expiration_days" {
-  type = number
-  description = "How many days should the build cache be kept. It only works when cache_type is 'S3'"
-}
-
 variable "cache_type" {
   type        = string
   default     = "NO_CACHE"
@@ -78,6 +73,7 @@ variable "build_compute_type" {
 }
 
 variable "build_timeout" {
+  type = number
   default     = 60
   description = "How long in minutes, from 5 to 480 (8 hours), for AWS CodeBuild to wait until timing out any related build that does not get marked as completed"
 }
@@ -100,38 +96,9 @@ variable "privileged_mode" {
   description = "(Optional) If set to true, enables running the Docker daemon inside a Docker container on the CodeBuild instance. Used when building Docker images"
 }
 
-variable "github_token" {
-  type        = string
-  default     = ""
-  description = "(Optional) GitHub auth token environment variable (`GITHUB_TOKEN`)"
-}
-
-variable "github_token_type" {
-  type        = string
-  default     = "PARAMETER_STORE"
-  description = "Storage type of GITHUB_TOKEN environment variable (`PARAMETER_STORE`, `PLAINTEXT`, `SECRETS_MANAGER`)"
-}
-
 variable "aws_region" {
+  type = string
   description = "(Optional) If set to true, enables running the Docker daemon inside a Docker container on the CodeBuild instance. Used when building Docker images"
-}
-
-variable "aws_account_id" {
-  type        = string
-  default     = ""
-  description = "(Optional) AWS Account ID. Used as CodeBuild ENV variable when building Docker images. For more info: http://docs.aws.amazon.com/codebuild/latest/userguide/sample-docker.html"
-}
-
-variable "image_repo_name" {
-  type        = string
-  default     = "UNSET"
-  description = "(Optional) ECR repository name to store the Docker image built by this module. Used as CodeBuild ENV variable when building Docker images. For more info: http://docs.aws.amazon.com/codebuild/latest/userguide/sample-docker.html"
-}
-
-variable "image_tag" {
-  type        = string
-  default     = "latest"
-  description = "(Optional) Docker image tag in the ECR repository, e.g. 'latest'. Used as CodeBuild ENV variable when building Docker images. For more info: http://docs.aws.amazon.com/codebuild/latest/userguide/sample-docker.html"
 }
 
 variable "service_role_arn" {
@@ -160,36 +127,6 @@ variable "source_location" {
   description = "The location of the source code from git or s3"
 }
 
-variable "artifact_type" {
-  type        = string
-  default     = "CODEPIPELINE"
-  description = "The build output artifact's type. Valid values for this parameter are: CODEPIPELINE, NO_ARTIFACTS or S3"
-}
-
-variable "artifact_location" {
-  type        = string
-  default     = ""
-  description = "Location of artifact. Applies only for artifact of type S3"
-}
-
-variable "secondary_artifact_location" {
-  type        = string
-  default     = null
-  description = "Location of secondary artifact. Must be an S3 reference"
-}
-
-variable "secondary_artifact_identifier" {
-  type        = string
-  default     = null
-  description = "Secondary artifact identifier. Must match the identifier in the build spec"
-}
-
-variable "secondary_artifact_encryption_enabled" {
-  type        = bool
-  default     = false
-  description = "Set to true to enable encryption on the secondary artifact bucket"
-}
-
 variable "report_build_status" {
   type        = bool
   default     = false
@@ -200,34 +137,6 @@ variable "git_clone_depth" {
   type        = number
   default     = null
   description = "Truncate git history to this many commits."
-}
-
-variable "private_repository" {
-  type        = bool
-  default     = false
-  description = "Set to true to login into private repository with credentials supplied in source_credential variable."
-}
-
-variable "source_credential_auth_type" {
-  type        = string
-  description = "The type of authentication used to connect to a GitHub, GitHub Enterprise, or Bitbucket repository."
-}
-
-variable "source_credential_server_type" {
-  type        = string
-  description = "The source provider used for this project."
-}
-
-variable "source_credential_token" {
-  type        = string
-  default     = ""
-  description = "For GitHub or GitHub Enterprise, this is the personal access token. For Bitbucket, this is the app password."
-}
-
-variable "source_credential_user_name" {
-  type        = string
-  default     = ""
-  description = "The Bitbucket username when the authType is BASIC_AUTH. This parameter is not valid for other types of source providers or connections."
 }
 
 variable "source_version" {
@@ -260,48 +169,6 @@ variable "logs_config" {
   description = "Configuration for the builds to store log data to CloudWatch or S3."
 }
 
-variable "extra_permissions" {
-  type        = list(any)
-  default     = []
-  description = "List of action strings which will be added to IAM service account permissions."
-}
-
-variable "iam_role_path" {
-  type        = string
-  default     = null
-  description = "Path to the role."
-}
-
-variable "iam_policy_path" {
-  type        = string
-  default     = "/service-role/"
-  description = "Path to the policy."
-}
-
-variable "iam_permissions_boundary" {
-  type        = string
-  default     = null
-  description = "ARN of the policy that is used to set the permissions boundary for the role."
-}
-
-variable "encryption_enabled" {
-  type        = bool
-  default     = false
-  description = "When set to 'true' the resource will have AES256 encryption enabled by default"
-}
-
-variable "versioning_enabled" {
-  type        = bool
-  default     = true
-  description = "Whether to enable versioning for the S3 bucket"
-}
-
-variable "access_log_bucket_name" {
-  type        = string
-  default     = ""
-  description = "Name of the S3 bucket where s3 access log will be sent to"
-}
-
 variable "file_system_locations" {
   type        = any
   default     = {}
@@ -326,60 +193,10 @@ variable "s3_cache_bucket_name" {
   description = "Use an existing s3 bucket name for cache. Relevant if `cache_type` is set to `S3`."
 }
 
-variable "codebuild_iam" {
-  description = "Additional IAM policies to add to CodePipeline IAM role."
-  type        = string
-  default     = null
-}
-
 variable "project_name" {
   type        = string
   description = "Name of the codebuild project."
   default     = "codebuild"
-}
-
-variable "enable_github_authentication" {
-  type        = bool
-  description = <<EOF
-    Whether to enable Github authentication using Personal Access token.
-    If true, it uses the github_token  and github_token_type must be of type SECRETS_MANAGER to authenticate
-  EOF
-  default     = false
-}
-
-variable "create_ecr_access_policy" {
-  type        = bool
-  description = "Whether to create the ECR access policy"
-  default     = true
-}
-
-variable "create_webhooks" {
-  type        = bool
-  description = "Whether to create webhooks for Github, GitHub Enterprise or Bitbucket"
-  default     = false
-}
-
-variable "webhook_build_type" {
-  type        = string
-  description = "Webhook build type. Choose between BUILD or BUILD_BATCH"
-  default     = "BUILD"
-}
-
-variable "webhook_filters" {
-  type        = map(string)
-  description = "Filters supported by webhook. EVENT, BASE_REF, HEAD_REF, ACTOR_ACCOUNT_ID, FILE_PATH, COMMIT_MESSAGE"
-  default     = {}
-}
-
-variable "lifecycle_rule_enabled" {
-  type        = bool
-  description = "Whether to enable a suffix for the S3 cache bucket name"
-  default     = true
-}
-
-variable "create_resources" {
-  type        = bool
-  description = "whether to create the IAM resources"
 }
 
 variable "artifacts" {
@@ -431,13 +248,7 @@ variable "context" {
     label_key_case      = null
     label_value_case    = null
     descriptor_formats  = {}
-    # Note: we have to use [] instead of null for unset lists due to
-    # https://github.com/hashicorp/terraform/issues/28137
-    # which was not fixed until Terraform 1.0.0,
-    # but we want the default to be all the labels in `label_order`
-    # and we want users to be able to prevent all tag generation
-    # by setting `labels_as_tags` to `[]`, so we need
-    # a different sentinel to indicate "default"
+    
     labels_as_tags = ["unset"]
   }
   description = <<-EOT
