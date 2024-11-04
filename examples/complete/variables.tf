@@ -55,12 +55,6 @@ variable "tags" {
     EOT
 }
 
-variable "cache_bucket_suffix_enabled" {
-  type        = bool
-  default     = true
-  description = "The cache bucket generates a random 13 character string to generate a unique bucket name. If set to false it uses terraform-null-label's id value. It only works when cache_type is 'S3"
-}
-
 variable "environment_variables" {
   type = list(object(
     {
@@ -107,7 +101,6 @@ variable "buildspec" {
 variable "codebuild_enabled" {
   type        = bool
   description = "Flag to enable or disable the module"
-  default     = true
 }
 
 variable "artifacts" {
@@ -140,45 +133,19 @@ variable "secondary_artifacts" {
   }))
 }
 
-variable "cache_enabled" {
-  type        = bool
-  description = "Flag to enable or disable the module"
-  default     = true
-}
-
-variable "codebuild_iam" {
-  description = "Additional IAM policies to add to CodePipeline IAM role."
-  type        = string
-  default     = null
-}
-
-# https://registry.terraform.io/providers/hashicorp/aws/latest/docs/resources/codebuild_project#vpc_config
-variable "vpc_config" {
-  type        = any
-  default     = {}
-  description = "Configuration for the builds to run inside a VPC."
-}
-
-variable "bucket_name" {
-  type        = string
-  default     = null
-  description = "Relevant if `cache_type` is set to `S3`."
-}
-
 variable "caches_modes" {
   type        = string
   default     = "LOCAL_CUSTOM_CACHE"
   description = "The type of data caching between builds. The inputs values are LOCAL_SOURCE_CACHE, LOCAL_DOCKER_LAYER_CACHE, LOCAL_CUSTOM_CACHE"
 }
 
-variable "aws_account_id" {
-  type        = string
-  default     = ""
-  description = "(Optional) AWS Account ID. Used as CodeBuild ENV variable when building Docker images. For more info: http://docs.aws.amazon.com/codebuild/latest/userguide/sample-docker.html"
-}
-
 variable "concurrent_build_limit" {
   type        = number
   default     = null
   description = "Specify a maximum number of concurrent builds for the project. The value specified must be greater than 0 and less than the account concurrent running builds limit."
+}
+
+variable "cache_bucket_suffix_enabled" {
+  type        = bool
+  description = "The cache bucket generates a random 13 character string to generate a unique bucket name. If set to false it uses terraform-null-label's id value. It only works when cache_type is 'S3"
 }

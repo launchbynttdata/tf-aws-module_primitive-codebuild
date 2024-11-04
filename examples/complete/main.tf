@@ -8,12 +8,15 @@ module "codebuild" {
   source_location        = var.source_location
   source_type            = var.source_type
   buildspec              = var.buildspec
-
-  artifacts                     = var.artifacts
-  secondary_artifacts           = var.secondary_artifacts
-  service_role_arn              = module.codebuild.service_role_arn
-  s3_cache_bucket_name          = module.codebuild.s3_bucket_arn
-  caches_modes                  = var.caches_modes
+  tags                   = var.tags
+  artifacts              = var.artifacts
+  secondary_artifacts    = var.secondary_artifacts
+  service_role_arn       = module.codebuild.service_role_arn
+  s3_cache_bucket_name   = module.codebuild.s3_bucket_arn
+  caches_modes           = var.caches_modes
+  project_name           = var.project_name
+  codebuild_enabled      = var.codebuild_enabled
+  cache_bucket_suffix_enabled = var.cache_bucket_suffix_enabled
 }
 
 

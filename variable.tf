@@ -51,7 +51,6 @@ variable "caches_modes" {
 variable "codebuild_enabled" {
   type        = bool
   description = "Flag to enable or disable the module"
-  default     = true
 }
 
 variable "badge_enabled" {
@@ -196,7 +195,6 @@ variable "s3_cache_bucket_name" {
 variable "project_name" {
   type        = string
   description = "Name of the codebuild project."
-  default     = "codebuild"
 }
 
 variable "artifacts" {
@@ -520,7 +518,6 @@ variable "instance_resource" {
 
 variable "cache_bucket_suffix_enabled" {
   type        = bool
-  default     = true
   description = "The cache bucket generates a random 13 character string to generate a unique bucket name. If set to false it uses terraform-null-label's id value. It only works when cache_type is 'S3"
 }
 

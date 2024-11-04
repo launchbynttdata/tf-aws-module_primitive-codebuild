@@ -10,7 +10,14 @@ buildspec = "buildspec.yml"
 
 cache_type = "S3"
 
-tags = {}
+codebuild_enabled = true
+
+cache_bucket_suffix_enabled = true
+
+tags = {
+  name        = "platform_engineering"
+  environment = "sandbox"
+}
 
 concurrent_build_limit = 1
 
