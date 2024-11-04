@@ -17,7 +17,6 @@ locals {
     # defaults` map because it creates a circular dependency
   }
 
-  default_labels_as_tags = keys(local.tags_context)
   # Unlike other inputs, the first setting of `labels_as_tags` cannot be later overridden. However,
   # we still have to pass the `input` map as the context to the next module. So we need to distinguish
   # between the first setting of var.labels_as_tags == null as meaning set the default and do not change
