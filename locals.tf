@@ -97,11 +97,7 @@ locals {
   delimiter        = local.input.delimiter == null ? local.defaults.delimiter : local.input.delimiter
   label_order      = local.input.label_order == null ? local.defaults.label_order : coalescelist(local.input.label_order, local.defaults.label_order)
   id_length_limit  = local.input.id_length_limit == null ? local.defaults.id_length_limit : local.input.id_length_limit
-  label_key_case   = local.input.label_key_case == null ? local.defaults.label_key_case : local.input.label_key_case
   label_value_case = local.input.label_value_case == null ? local.defaults.label_value_case : local.input.label_value_case
-
-  # labels_as_tags is an exception to the rule that input vars override context values (see above)
-  labels_as_tags = contains(local.input.labels_as_tags, "default") ? local.default_labels_as_tags : local.input.labels_as_tags
 
   tags_context = {
     namespace   = local.namespace
@@ -140,7 +136,4 @@ locals {
 
   cache_bucket_name = "${var.project_name}${var.cache_bucket_suffix_enabled ? "-${join("", [for s in random_string.bucket_prefix : s.result])}" : ""}"
 
-  # Determine if the cache type is S3 and if the bucket should be created
-  s3_cache_enabled       = var.cache_type == "S3"
-  
 }
