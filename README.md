@@ -1,3 +1,5 @@
+This repository provides the basic template for an AWS Codebuild Project, it creates an S3 bucket for artifacts and an IAM Role for Codebuild to write into the bucket.
+
 ## Requirements
 
 | Name | Version |
