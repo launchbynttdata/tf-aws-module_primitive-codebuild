@@ -1,10 +1,8 @@
-This repository provides the basic template for an AWS Codebuild Project, it creates an S3 bucket for artifacts and an IAM Role for Codebuild to write into the bucket.
-
 ## Requirements
 
 | Name | Version |
 |------|---------|
-| <a name="requirement_terraform"></a> [terraform](#requirement\_terraform) | ~> 1.5.0 <=1.5.5 |
+| <a name="requirement_terraform"></a> [terraform](#requirement\_terraform) | ~> 1.5.0, <=1.5.5 |
 | <a name="requirement_aws"></a> [aws](#requirement\_aws) | ~>5.0 |
 | <a name="requirement_random"></a> [random](#requirement\_random) | >= 2.1 |
 
