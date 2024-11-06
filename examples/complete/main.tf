@@ -12,11 +12,16 @@ module "codebuild" {
   artifacts              = var.artifacts
   secondary_artifacts    = var.secondary_artifacts
   service_role_arn       = module.codebuild.service_role_arn
-  s3_cache_bucket_name   = module.codebuild.s3_bucket_arn
   caches_modes           = var.caches_modes
   project_name           = var.project_name
   codebuild_enabled      = var.codebuild_enabled
   cache_bucket_suffix_enabled = var.cache_bucket_suffix_enabled
+  badge_enabled = var.badge_enabled
+  build_type = var.build_type
+  build_image = var.build_image
+  build_compute_type = var.build_compute_type
+  build_timeout = var.build_timeout
+  privileged_mode = var.privileged_mode
 }
 
 

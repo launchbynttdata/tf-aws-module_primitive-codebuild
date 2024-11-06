@@ -8,11 +8,23 @@ source_location = "https://github.com/debasish-sahoo-nttd/sample-dotnetcore-app.
 
 buildspec = "buildspec.yml"
 
-cache_type = "S3"
+cache_type = "NO_CACHE"
 
 codebuild_enabled = true
 
 cache_bucket_suffix_enabled = true
+
+badge_enabled = false
+
+build_type = "LINUX_CONTAINER"
+
+build_image = "aws/codebuild/standard:2.0"
+  
+build_compute_type = "BUILD_GENERAL1_SMALL"
+
+build_timeout = 60
+
+privileged_mode = false
 
 tags = {
   name        = "platform_engineering"

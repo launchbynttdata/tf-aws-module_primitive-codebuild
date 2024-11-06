@@ -55,31 +55,26 @@ variable "codebuild_enabled" {
 
 variable "badge_enabled" {
   type        = bool
-  default     = false
   description = "Generates a publicly-accessible URL for the projects build badge. Available as badge_url attribute when enabled"
 }
 
 variable "build_image" {
   type        = string
-  default     = "aws/codebuild/standard:2.0"
   description = "Docker image for build environment, e.g. 'aws/codebuild/standard:2.0' or 'aws/codebuild/eb-nodejs-6.10.0-amazonlinux-64:4.0.0'. For more info: http://docs.aws.amazon.com/codebuild/latest/userguide/build-env-ref.html"
 }
 
 variable "build_compute_type" {
   type        = string
-  default     = "BUILD_GENERAL1_SMALL"
   description = "Instance type of the build instance"
 }
 
 variable "build_timeout" {
   type = number
-  default     = 60
   description = "How long in minutes, from 5 to 480 (8 hours), for AWS CodeBuild to wait until timing out any related build that does not get marked as completed"
 }
 
 variable "build_type" {
   type        = string
-  default     = "LINUX_CONTAINER"
   description = "The type of build environment, e.g. 'LINUX_CONTAINER' or 'WINDOWS_CONTAINER'"
 }
 
@@ -91,7 +86,6 @@ variable "buildspec" {
 
 variable "privileged_mode" {
   type        = bool
-  default     = false
   description = "(Optional) If set to true, enables running the Docker daemon inside a Docker container on the CodeBuild instance. Used when building Docker images"
 }
 
@@ -557,17 +551,17 @@ variable "bucket_key_enabled" {
   default     = false
 }
 
-variable "kms_key_description" {
-  description = "KMS key description. This KMS key is used for SSE-KMS encryption f source bucket."
-  type        = string
-  default     = "KMS key used for source bucket encryption"
-}
+# variable "kms_key_description" {
+#   description = "KMS key description. This KMS key is used for SSE-KMS encryption f source bucket."
+#   type        = string
+#   default     = "KMS key used for source bucket encryption"
+# }
 
-variable "kms_key_deletion_window_in_days" {
-  description = "(Optional) The waiting period, specified in number of days. After the waiting period ends, AWS KMS deletes the KMS key. If you specify a value, it must be between 7 and 30, inclusive. If you do not specify a value, it defaults to 30. If the KMS key is a multi-Region primary key with replicas, the waiting period begins when the last of its replica keys is deleted. Otherwise, the waiting period begins immediately."
-  type        = number
-  default     = 30
-}
+# variable "kms_key_deletion_window_in_days" {
+#   description = "(Optional) The waiting period, specified in number of days. After the waiting period ends, AWS KMS deletes the KMS key. If you specify a value, it must be between 7 and 30, inclusive. If you do not specify a value, it defaults to 30. If the KMS key is a multi-Region primary key with replicas, the waiting period begins when the last of its replica keys is deleted. Otherwise, the waiting period begins immediately."
+#   type        = number
+#   default     = 30
+# }
 
 variable "enable_versioning" {
   description = "Whether to enable versioning for this S3 bucket. Default is false"

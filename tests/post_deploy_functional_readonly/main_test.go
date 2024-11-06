@@ -5,7 +5,7 @@ import (
 
     "github.com/launchbynttdata/lcaf-component-terratest/lib"
     "github.com/launchbynttdata/lcaf-component-terratest/types"
-    "github.com/launchbynttdata/terraform-aws-codebuild/tests/testimpl"
+    "github.com/launchbynttdata/tf-aws-module_primitive-codebuild/tests/testimpl"
 )
 
 const (
