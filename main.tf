@@ -52,13 +52,6 @@ resource "aws_iam_role_policy" "codebuild_policy" {
   policy = data.aws_iam_policy_document.codebuild_policy.json
 }
 
-# AWS KMS Key Resource
-# resource "aws_kms_key" "kms_key" {
-#   description             = var.kms_key_description
-#   deletion_window_in_days = var.kms_key_deletion_window_in_days
-#   enable_key_rotation     = true
-# }
-
 # Codebuild Project
 resource "aws_codebuild_project" "default" {
   name                   = var.project_name
