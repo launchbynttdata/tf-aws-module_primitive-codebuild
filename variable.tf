@@ -510,7 +510,6 @@ variable "instance_resource" {
   }
 }
 
-
 variable "enable_versioning" {
   description = "Whether to enable versioning for this S3 bucket. Default is false"
   type        = bool
