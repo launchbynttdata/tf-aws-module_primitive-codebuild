@@ -1,7 +1,5 @@
 project_name = "codebuild-osahon"
 
-aws_region = "us-east-2"
-
 source_type = "GITHUB"
 
 source_location = "https://github.com/debasish-sahoo-nttd/sample-dotnetcore-app.git"
@@ -9,8 +7,6 @@ source_location = "https://github.com/debasish-sahoo-nttd/sample-dotnetcore-app.
 buildspec = "buildspec.yml"
 
 cache_type = "NO_CACHE"
-
-codebuild_enabled = true
 
 badge_enabled = false
 
