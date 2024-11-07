@@ -12,8 +12,6 @@ cache_type = "NO_CACHE"
 
 codebuild_enabled = true
 
-cache_bucket_suffix_enabled = true
-
 badge_enabled = false
 
 build_type = "LINUX_CONTAINER"

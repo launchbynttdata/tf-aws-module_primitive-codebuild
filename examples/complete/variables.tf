@@ -145,11 +145,6 @@ variable "concurrent_build_limit" {
   description = "Specify a maximum number of concurrent builds for the project. The value specified must be greater than 0 and less than the account concurrent running builds limit."
 }
 
-variable "cache_bucket_suffix_enabled" {
-  type        = bool
-  description = "The cache bucket generates a random 13 character string to generate a unique bucket name. If set to false it uses terraform-null-label's id value. It only works when cache_type is 'S3"
-}
-
 variable "badge_enabled" {
   type        = bool
   description = "Generates a publicly-accessible URL for the projects build badge. Available as badge_url attribute when enabled"

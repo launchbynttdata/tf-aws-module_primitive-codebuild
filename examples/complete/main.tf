@@ -15,7 +15,6 @@ module "codebuild" {
   caches_modes           = var.caches_modes
   project_name           = var.project_name
   codebuild_enabled      = var.codebuild_enabled
-  cache_bucket_suffix_enabled = var.cache_bucket_suffix_enabled
   badge_enabled = var.badge_enabled
   build_type = var.build_type
   build_image = var.build_image

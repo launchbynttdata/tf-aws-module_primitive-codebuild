@@ -9,20 +9,17 @@ import (
 )
 
 const (
-    testConfigsExamplesFolderDefault = "../../examples"
+    testConfigsExamplesFolderDefault = "../../examples/complete"
     infraTFVarFileNameDefault        = "test.tfvars"
 )
 
-// TestS3BucketAndIAMRoleModule is the post-deploy functional test for the S3 bucket and IAM role
-func TestS3BucketAndIAMRoleModule(t *testing.T) {
-
-    // Setup the Terratest context
+func TestCodeBuildProjectModule(t *testing.T) {
+    // Set up the Terratest context with the configuration folder and vars file
     ctx := types.CreateTestContextBuilder().
-        SetTestConfig(&testimpl.ThisTFModuleConfig{}).
         SetTestConfigFolderName(testConfigsExamplesFolderDefault).
         SetTestConfigFileName(infraTFVarFileNameDefault).
         Build()
 
-    // Run setup, test, teardown steps using Terratest framework
-    lib.RunSetupTestTeardown(t, *ctx, testimpl.TestS3BucketAndIAMRole)
+    // Run the CodeBuild project test
+    lib.RunSetupTestTeardown(t, *ctx, testimpl.TestComposableComplete)
 }
