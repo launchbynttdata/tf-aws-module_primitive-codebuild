@@ -23,11 +23,6 @@ output "buildspec" {
   value       = var.buildspec
 }
 
-# output "s3_bucket_arn" {
-#   description = "The arn of s3 bucket created for artifact and or caching"
-#   value = module.s3_bucket.arn
-# }
-
 output "service_role_arn" {
   description = "The arn of the service role created for the codebuild project"
   value = aws_iam_role.codebuild_role.arn
