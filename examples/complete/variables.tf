@@ -1,8 +1,3 @@
-variable "aws_region" {
-  type        = string
-  description = "AWS region"
-}
-
 variable "logical_product_family" {
   type        = string
   description = <<EOF
@@ -96,11 +91,6 @@ variable "buildspec" {
   description = "Path to the buildspec.yml file"
   type        = string
   default     = "buildspec.yml"
-}
-
-variable "codebuild_enabled" {
-  type        = bool
-  description = "Flag to enable or disable the module"
 }
 
 variable "artifacts" {

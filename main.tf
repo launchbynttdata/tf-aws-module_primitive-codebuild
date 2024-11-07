@@ -1,5 +1,3 @@
-data "aws_caller_identity" "default" {}
-
 # Create the IAM role for CodeBuild
 resource "aws_iam_role" "codebuild_role" {
   name               = "${var.project_name}-codebuild-role"
