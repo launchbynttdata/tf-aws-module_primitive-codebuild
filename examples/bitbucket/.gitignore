@@ -1,7 +1,0 @@
-# Compiled files
-*.tfstate
-*.tfstate.backup
-.terraform.tfstate.lock.info
-.terraform/
-*.log
-build_out.json

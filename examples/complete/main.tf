@@ -1,15 +1,26 @@
-provider "aws" {
-  region = var.region
-}
-
 module "codebuild" {
-  source                      = "../../"
-  description                 = "This is my awesome CodeBuild project"
-  concurrent_build_limit      = 1
-  cache_bucket_suffix_enabled = var.cache_bucket_suffix_enabled
-  environment_variables       = var.environment_variables
-  cache_expiration_days       = var.cache_expiration_days
-  cache_type                  = var.cache_type
-
-  context = module.this.context
+  source                 = "../.."
+  description            = "This is my awesome Codebuild project"
+  concurrent_build_limit = var.concurrent_build_limit
+  environment_variables  = var.environment_variables
+  cache_type             = var.cache_type
+  source_location        = var.source_location
+  source_type            = var.source_type
+  buildspec              = var.buildspec
+  tags                   = var.tags
+  artifacts              = var.artifacts
+  secondary_artifacts    = var.secondary_artifacts
+  service_role_arn       = module.codebuild.service_role_arn
+  caches_modes           = var.caches_modes
+  project_name           = var.project_name
+  badge_enabled          = var.badge_enabled
+  build_type             = var.build_type
+  build_image            = var.build_image
+  build_compute_type     = var.build_compute_type
+  build_timeout          = var.build_timeout
+  privileged_mode        = var.privileged_mode
 }
+
+
+
+
