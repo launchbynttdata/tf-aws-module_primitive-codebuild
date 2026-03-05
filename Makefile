@@ -7,7 +7,7 @@
 # Unless required by applicable law or agreed to in writing, software
 # distributed under the License is distributed on an "AS IS" BASIS,
 # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-# See the License for the specific language governing permissions andA
+# See the License for the specific language governing permissions and
 # limitations under the License.
 
 # Include custom values from .lcafenv. Repository root is assumed to be the working directory.
@@ -18,7 +18,7 @@ LCAF_ENV_FILE = .lcafenv
 # Source repository for repo manifests
 REPO_MANIFESTS_URL ?= https://github.com/launchbynttdata/launch-common-automation-framework.git
 # Branch of source repository for repo manifests. Other tags not currently supported.
-REPO_BRANCH ?= refs/tags/1.0.0
+REPO_BRANCH ?= refs/tags/1.8.1
 # Path to seed manifest in repository referenced in REPO_MANIFESTS_URL
 REPO_MANIFEST ?= manifests/terraform_modules/seed/manifest.xml
 
