@@ -64,7 +64,7 @@ variable "build_compute_type" {
 }
 
 variable "build_timeout" {
-  type = number
+  type        = number
   description = "How long in minutes, from 5 to 480 (8 hours), for AWS CodeBuild to wait until timing out any related build that does not get marked as completed"
 }
 
@@ -205,6 +205,17 @@ variable "secondary_artifacts" {
   }))
 }
 
+variable "tags" {
+  type        = map(string)
+  default     = {}
+  description = <<-EOT
+    Additional tags (e.g. `{'BusinessUnit': 'XYZ'}`).
+    Neither the tag keys nor the tag values will be modified by this module.
+    EOT
+}
+
+# TODO: These variables are unused and should be removed, but doing so is a breaking change for existing callers.
+# tflint-ignore: terraform_unused_declarations
 variable "context" {
   type = any
   default = {
@@ -224,7 +235,7 @@ variable "context" {
     label_key_case      = null
     label_value_case    = null
     descriptor_formats  = {}
-    
+
     labels_as_tags = ["unset"]
   }
   description = <<-EOT
@@ -246,15 +257,8 @@ variable "context" {
   }
 }
 
-variable "tags" {
-  type        = map(string)
-  default     = {}
-  description = <<-EOT
-    Additional tags (e.g. `{'BusinessUnit': 'XYZ'}`).
-    Neither the tag keys nor the tag values will be modified by this module.
-    EOT
-}
-
+# TODO: These variables are unused and should be removed, but doing so is a breaking change for existing callers.
+# tflint-ignore: terraform_unused_declarations
 variable "label_key_case" {
   type        = string
   default     = null
@@ -271,6 +275,8 @@ variable "label_key_case" {
   }
 }
 
+# TODO: These variables are unused and should be removed, but doing so is a breaking change for existing callers.
+# tflint-ignore: terraform_unused_declarations
 variable "label_value_case" {
   type        = string
   default     = null
@@ -289,6 +295,8 @@ variable "label_value_case" {
   }
 }
 
+# TODO: These variables are unused and should be removed, but doing so is a breaking change for existing callers.
+# tflint-ignore: terraform_unused_declarations
 variable "logical_product_family" {
   type        = string
   description = <<EOF
@@ -296,15 +304,16 @@ variable "logical_product_family" {
     Example: org_name, department_name.
   EOF
   nullable    = false
+  default     = "launch"
 
   validation {
     condition     = can(regex("^[_\\-A-Za-z0-9]+$", var.logical_product_family))
     error_message = "The variable must contain letters, numbers, -, _, and .."
   }
-
-  default = "launch"
 }
 
+# TODO: These variables are unused and should be removed, but doing so is a breaking change for existing callers.
+# tflint-ignore: terraform_unused_declarations
 variable "logical_product_service" {
   type        = string
   description = <<EOF
@@ -312,15 +321,16 @@ variable "logical_product_service" {
     For example, backend, frontend, middleware etc.
   EOF
   nullable    = false
+  default     = "servicename"
 
   validation {
     condition     = can(regex("^[_\\-A-Za-z0-9]+$", var.logical_product_service))
     error_message = "The variable must contain letters, numbers, -, _, and .."
   }
-
-  default = "servicename"
 }
 
+# TODO: These variables are unused and should be removed, but doing so is a breaking change for existing callers.
+# tflint-ignore: terraform_unused_declarations
 variable "class_env" {
   type        = string
   default     = "dev"
@@ -333,6 +343,8 @@ variable "class_env" {
   }
 }
 
+# TODO: These variables are unused and should be removed, but doing so is a breaking change for existing callers.
+# tflint-ignore: terraform_unused_declarations
 variable "instance_env" {
   type        = number
   description = "Number that represents the instance of the environment."
@@ -344,6 +356,8 @@ variable "instance_env" {
   }
 }
 
+# TODO: These variables are unused and should be removed, but doing so is a breaking change for existing callers.
+# tflint-ignore: terraform_unused_declarations
 variable "instance_resource" {
   type        = number
   description = "Number that represents the instance of the resource."
@@ -354,4 +368,3 @@ variable "instance_resource" {
     error_message = "Instance number should be between 1 to 100."
   }
 }
-
