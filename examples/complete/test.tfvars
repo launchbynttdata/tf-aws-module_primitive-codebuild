@@ -14,7 +14,7 @@ badge_enabled = false
 build_type = "LINUX_CONTAINER"
 
 build_image = "aws/codebuild/standard:2.0"
-  
+
 build_compute_type = "BUILD_GENERAL1_SMALL"
 
 build_timeout = 60
@@ -89,4 +89,3 @@ secondary_artifacts = [{
   encryption_disabled    = false
   override_artifact_name = false
 }]
-

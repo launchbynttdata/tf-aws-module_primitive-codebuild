@@ -1,45 +1,3 @@
-variable "logical_product_family" {
-  type        = string
-  description = <<EOF
-    (Required) Name of the product family for which the resource is created.
-    Example: org_name, department_name.
-  EOF
-  nullable    = false
-
-  validation {
-    condition     = can(regex("^[_\\-A-Za-z0-9]+$", var.logical_product_family))
-    error_message = "The variable must contain letters, numbers, -, _, and .."
-  }
-
-  default = "launch"
-}
-
-variable "logical_product_service" {
-  type        = string
-  description = <<EOF
-    (Required) Name of the product service for which the resource is created.
-    For example, backend, frontend, middleware etc.
-  EOF
-  nullable    = false
-
-  validation {
-    condition     = can(regex("^[_\\-A-Za-z0-9]+$", var.logical_product_service))
-    error_message = "The variable must contain letters, numbers, -, _, and .."
-  }
-  default = "servicename"
-}
-
-variable "class_env" {
-  type        = string
-  default     = "dev"
-  description = "(Required) Environment where resource is going to be deployed. For example. dev, qa, uat"
-  nullable    = false
-
-  validation {
-    condition     = length(regexall("\\b \\b", var.class_env)) == 0
-    error_message = "Spaces between the words are not allowed."
-  }
-}
 
 variable "tags" {
   type        = map(string)
@@ -151,7 +109,7 @@ variable "build_compute_type" {
 }
 
 variable "build_timeout" {
-  type = number
+  type        = number
   description = "How long in minutes, from 5 to 480 (8 hours), for AWS CodeBuild to wait until timing out any related build that does not get marked as completed"
 }
 

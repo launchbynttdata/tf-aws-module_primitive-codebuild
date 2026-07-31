@@ -25,5 +25,5 @@ output "buildspec" {
 
 output "service_role_arn" {
   description = "The arn of the service role created for the codebuild project"
-  value = aws_iam_role.codebuild_role.arn
+  value       = aws_iam_role.codebuild_role.arn
 }
