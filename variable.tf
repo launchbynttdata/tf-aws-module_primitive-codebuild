@@ -64,7 +64,7 @@ variable "build_compute_type" {
 }
 
 variable "build_timeout" {
-  type = number
+  type        = number
   description = "How long in minutes, from 5 to 480 (8 hours), for AWS CodeBuild to wait until timing out any related build that does not get marked as completed"
 }
 
@@ -224,7 +224,7 @@ variable "context" {
     label_key_case      = null
     label_value_case    = null
     descriptor_formats  = {}
-    
+
     labels_as_tags = ["unset"]
   }
   description = <<-EOT
@@ -354,4 +354,3 @@ variable "instance_resource" {
     error_message = "Instance number should be between 1 to 100."
   }
 }
-

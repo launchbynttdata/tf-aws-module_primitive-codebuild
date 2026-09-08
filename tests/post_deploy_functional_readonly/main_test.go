@@ -27,5 +27,5 @@ func TestCodeBuildProjectModule(t *testing.T) {
 		Build()
 
 	// Run the CodeBuild project test
-	lib.RunSetupTestTeardown(t, *ctx, testimpl.TestComposableComplete)
+	lib.RunNonDestructiveTest(t, *ctx, testimpl.TestComposableComplete)
 }

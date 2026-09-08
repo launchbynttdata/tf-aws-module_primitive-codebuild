@@ -14,7 +14,7 @@ const (
 )
 
 func TestCodeBuildProjectModule(t *testing.T) {
-	
+
 	ctx := types.CreateTestContextBuilder().
 		SetTestConfig(&testimpl.ThisTFModuleConfig{}).
 		SetTestConfigFolderName(testConfigsExamplesFolderDefault).

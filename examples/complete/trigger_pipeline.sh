@@ -27,4 +27,4 @@ else
     echo "Failed to trigger Codebuild"
     exit 1
 
-fi 
+fi

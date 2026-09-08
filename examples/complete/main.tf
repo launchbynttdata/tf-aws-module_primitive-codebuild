@@ -20,7 +20,3 @@ module "codebuild" {
   build_timeout          = var.build_timeout
   privileged_mode        = var.privileged_mode
 }
-
-
-
-
