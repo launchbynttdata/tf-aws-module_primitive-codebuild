@@ -15,43 +15,35 @@ import (
 
 // TestComposableComplete verifies the existence of the CodeBuild project using the `project_name` output from Terraform
 func TestComposableComplete(t *testing.T, ctx types.TestContext) {
-	// Initialize AWS CodeBuild client
-	awsClient := GetAWSCodeBuildClient(t)
+	awsClient := GetAWSCodeBuildClient(t, t.Context())
 
-	// Subtest to check if the CodeBuild project exists
 	t.Run("TestCodeBuildProjectExists", func(t *testing.T) {
-		// Retrieve CodeBuild project name from Terraform output
-		codeBuildProjectName := terraform.OutputContext(t, context.Background(), ctx.TerratestTerraformOptions(), "project_name")
+		codeBuildProjectName := terraform.OutputContext(t, t.Context(), ctx.TerratestTerraformOptions(), "project_name")
 		require.NotEmpty(t, codeBuildProjectName, "Terraform output 'project_name' should not be empty")
 
-		// Describe the CodeBuild project
-		project, err := awsClient.BatchGetProjects(context.TODO(), &codebuild.BatchGetProjectsInput{
+		project, err := awsClient.BatchGetProjects(t.Context(), &codebuild.BatchGetProjectsInput{
 			Names: []string{codeBuildProjectName},
 		})
-		if err != nil {
-			t.Errorf("Failure during BatchGetProjects: %v", err)
-			return
-		}
+		require.NoError(t, err, "BatchGetProjects failed for %s", codeBuildProjectName)
+		require.Len(t, project.Projects, 1, "expected exactly one CodeBuild project")
 
-		// Ensure exactly one project was retrieved
-		if len(project.Projects) != 1 {
-			t.Errorf("Expected exactly one CodeBuild project, but found %d", len(project.Projects))
-			return
-		}
-
-		// Assert that the project name matches the output
-		assert.Equal(t, codeBuildProjectName, *project.Projects[0].Name, "Expected project name does not match actual name!")
+		assert.Equal(t, codeBuildProjectName, aws.ToString(project.Projects[0].Name))
 	})
 }
 
 // GetAWSCodeBuildClient initializes and returns an AWS CodeBuild client
-func GetAWSCodeBuildClient(t *testing.T) *codebuild.Client {
-	return codebuild.NewFromConfig(GetAWSConfig(t))
+func GetAWSCodeBuildClient(t *testing.T, ctx context.Context) *codebuild.Client {
+	t.Helper()
+
+	return codebuild.NewFromConfig(GetAWSConfig(t, ctx))
 }
 
 // GetAWSConfig loads the default AWS SDK configuration
-func GetAWSConfig(t *testing.T) aws.Config {
-	cfg, err := config.LoadDefaultConfig(context.TODO())
+func GetAWSConfig(t *testing.T, ctx context.Context) aws.Config {
+	t.Helper()
+
+	cfg, err := config.LoadDefaultConfig(ctx)
 	require.NoErrorf(t, err, "unable to load SDK config: %v", err)
+
 	return cfg
 }

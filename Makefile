@@ -358,6 +358,13 @@ tfmodule/lint: tfmodule/init
 	@$(foreach module,$(ALL_EXAMPLES),$(call tflint_terraform_module,$(module)))
 	@$(foreach module,$(ALL_EXAMPLES),$(call validate_terraform_module,$(module)))
 
+.PHONY: tfmodule/check-version-floor
+# Deliberately not a prerequisite of tfmodule/lint: it may need to install an
+# older Terraform, which would be a surprising cost on a local `make lint`.
+# CI invokes it explicitly.
+tfmodule/check-version-floor:
+	@bash .github/scripts/check-terraform-version-floor.sh
+
 .PHONY: tfmodule/list
 tfmodule/list:
 	@echo -n "Modules: "
