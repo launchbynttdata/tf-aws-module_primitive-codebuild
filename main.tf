@@ -62,7 +62,7 @@ resource "aws_codebuild_project" "default" {
   encryption_key         = var.encryption_key
 
   tags = merge(local.tags, var.tags)
-  
+
   # Primary Artifacts
   artifacts {
     type                   = var.artifacts[0].type
@@ -92,8 +92,8 @@ resource "aws_codebuild_project" "default" {
   }
 
   cache {
-    type     = var.cache_type
-    modes    = [var.caches_modes]
+    type  = var.cache_type
+    modes = [var.caches_modes]
   }
 
   environment {
@@ -113,7 +113,7 @@ resource "aws_codebuild_project" "default" {
     }
 
   }
- 
+
   # Source for Codebuild Project
   source {
     buildspec           = var.buildspec
@@ -129,7 +129,7 @@ resource "aws_codebuild_project" "default" {
       }
     }
   }
- 
+
   #Secondary Sources
   dynamic "secondary_sources" {
     for_each = var.secondary_sources
@@ -147,8 +147,8 @@ resource "aws_codebuild_project" "default" {
       }
     }
   }
-  
-  # VPC 
+
+  # VPC
   dynamic "vpc_config" {
     for_each = (lookup(var.vpc_config, "vpc_id", null) != null && length(lookup(var.vpc_config, "subnets", [])) > 0 && length(lookup(var.vpc_config, "security_group_ids", [])) > 0) ? [1] : []
     content {
@@ -157,8 +157,8 @@ resource "aws_codebuild_project" "default" {
       security_group_ids = lookup(var.vpc_config, "security_group_ids", null)
     }
   }
- 
-  # Cloudwatch for Codebuild Project 
+
+  # Cloudwatch for Codebuild Project
   dynamic "logs_config" {
     for_each = length(var.logs_config) > 0 ? [""] : []
     content {
@@ -193,4 +193,3 @@ resource "aws_codebuild_project" "default" {
     }
   }
 }
-
