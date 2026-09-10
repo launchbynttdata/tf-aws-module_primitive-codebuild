@@ -20,12 +20,6 @@ See [examples/complete](examples/complete) for a deployable example.
 | <a name="requirement_aws"></a> [aws](#requirement\_aws) | ~>5.0 |
 | <a name="requirement_random"></a> [random](#requirement\_random) | >= 2.1 |
 
-## Providers
-
-| Name | Version |
-|------|---------|
-| <a name="provider_aws"></a> [aws](#provider\_aws) | 5.100.0 |
-
 ## Modules
 
 No modules.
